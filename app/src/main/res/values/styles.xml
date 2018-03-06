@@ -1,0 +1,58 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:actionBarStyle">@style/MyActionBar_Main</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/MyActionBar_Main</item>->
+
+        <item name="android:actionBarTabBarStyle">@style/MyActionBar_Tab</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarTabBarStyle">@style/MyActionBar_Tab</item>->
+    </style>
+
+
+
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar_Main"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_main_background</item>
+        <!-- Support library compatibility -->
+        <item name="background">@color/actionbar_main_background</item>
+        <item name="android:titleTextStyle">@style/MyActionBar_Main_Title</item>
+
+    </style>
+
+    <style name="MyActionBar_Main_Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/actionbar_main_TitleTextColor</item>
+      <!--  <item name="android:layout_gravity">center</item>-->
+    </style>
+
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar_Tab"
+        parent="@style/Widget.AppCompat.Light.ActionBar.TabBar">
+        <item name="android:background">@color/actionbar_tab_background</item>
+        <!-- Support library compatibility -->
+        <item name="background">@color/actionbar_tab_background</item>
+        <item name="android:titleTextStyle">@style/MyActionBar_Tab_Title</item>
+
+    </style>
+
+    <style name="MyActionBar_Tab_Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/actionbar_tab_TitleTextColor</item>
+
+    </style>
+
+
+
+
+
+
+</resources>
