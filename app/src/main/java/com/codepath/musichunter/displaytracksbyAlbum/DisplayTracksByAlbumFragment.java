@@ -4,6 +4,8 @@ package com.codepath.musichunter.displaytracksbyAlbum;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 public class DisplayTracksByAlbumFragment extends Fragment {
 
     private IRequestInterface iRequestInterface;
+    private RecyclerView m_rv_tracksDetails;
     public DisplayTracksByAlbumFragment() {
         // Required empty public constructor
 
@@ -50,39 +53,34 @@ public class DisplayTracksByAlbumFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         iRequestInterface = ServiceConnection.getConnection();
+        initRecycleView();
         trackViewBySearch();
     }
 
+    private void initRecycleView() {
+        m_rv_tracksDetails = (RecyclerView) getActivity().findViewById(R.id.rv_trackDetails);
+        m_rv_tracksDetails.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
     private void trackViewBySearch() {
+        String albumId = getActivity().getIntent().getExtras().getString("albumId");
+        iRequestInterface.getTracksByAlbum(albumId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<TracksModel>() {
+                    @Override
+                    public void accept(TracksModel tracksModel) throws Exception {
+                     //   String desc= tracksModel.getTrack().get(0).getStrDescriptionEN().toString();
+                       // Toast.makeText(getContext(),desc,Toast.LENGTH_SHORT).show();
+                        m_rv_tracksDetails.setAdapter(new TracksAdapter(tracksModel));
 
-        MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-          /*      iRequestInterface.getTracksByAlbums(s)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<TracksModel>() {
-                            @Override
-                            public void accept(TracksModel tracksModel) throws Exception {
-                                Toast.makeText(getContext(), tracksModel.getTrack().get(0).getStrTrack(), Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(getContext(),throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        });*/
-
-
-                return true;
-            }
-
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

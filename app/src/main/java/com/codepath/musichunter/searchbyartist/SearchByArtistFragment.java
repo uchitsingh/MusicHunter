@@ -55,8 +55,10 @@ public class SearchByArtistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_by_artist, null);
         mUbinder = ButterKnife.bind(getActivity());
 
-
-
+      /*  if(savedInstanceState!=null){
+            CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+            MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+        }*/
         // Inflate the layout for this fragment
         return view;
     }
@@ -92,6 +94,7 @@ public class SearchByArtistFragment extends Fragment {
     public void artistViewBySearch() {
         //    MainActivity mainActivity  = new MainActivity();
       //  if(savedInstance!=null) {
+
               MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
@@ -101,50 +104,54 @@ public class SearchByArtistFragment extends Fragment {
                             .subscribe(new Consumer<ArtistModel>() {
                                 @Override
                                 public void accept(ArtistModel artistModel) throws Exception {
-                                    //         Toast.makeText(getContext(), artistModel.getArtists().get(0).getStrBiographyEN(), Toast.LENGTH_SHORT).show();
-                                    //        Log.i("bio", artistModel.getArtists().get(0).getStrBiographyEN());
-                                    //m_Rv_ArtistList.setAdapter(new ArtistAdapter(artistModel));
-                                    // rl_ArtistDetails.setVisibility(View.VISIBLE);
-                                    m_Cv_ArtistDetails.setVisibility(View.VISIBLE);
-                                    //        m_ArtistName.setText(artistModel.getArtists().get(0).getStrArtist());
-                                    m_ArtistBio.setText(artistModel.getArtists().get(0).getStrBiographyEN());
-                                    m_ArtistGenre.setText(artistModel.getArtists().get(0).getStrGenre());
-                                    m_ArtistStyle.setText(artistModel.getArtists().get(0).getStrStyle());
-                                    m_ArtistMood.setText(artistModel.getArtists().get(0).getStrMood());
+                                   // try{
+                                        if(artistModel!=null && artistModel.getArtists().size()>0){
+                                            m_Cv_ArtistDetails.setVisibility(View.VISIBLE);
+                                            //        m_ArtistName.setText(artistModel.getArtists().get(0).getStrArtist());
+                                            m_ArtistBio.setText(artistModel.getArtists().get(0).getStrBiographyEN());
+                                            m_ArtistGenre.setText(artistModel.getArtists().get(0).getStrGenre());
+                                            m_ArtistStyle.setText(artistModel.getArtists().get(0).getStrStyle());
+                                            m_ArtistMood.setText(artistModel.getArtists().get(0).getStrMood());
 
-                                    String artist_Label = artistModel.getArtists().get(0).getStrLabel();
-                                    if (artist_Label != null) {
-                                        m_ArtistLabel.setText(artistModel.getArtists().get(0).getStrLabel());
-                                    } else {
-                                        m_ArtistLabel.setText("N/A");
-                                    }
+                                            String artist_Label = artistModel.getArtists().get(0).getStrLabel();
+                                            if (artist_Label != null) {
+                                                m_ArtistLabel.setText(artistModel.getArtists().get(0).getStrLabel());
+                                            } else {
+                                                m_ArtistLabel.setText("N/A");
+                                            }
 
-                                    m_ArtistCountry.setText(artistModel.getArtists().get(0).getStrCountry());
+                                            m_ArtistCountry.setText(artistModel.getArtists().get(0).getStrCountry());
 
-                                    String formedYear = artistModel.getArtists().get(0).getIntFormedYear();
+                                            String formedYear = artistModel.getArtists().get(0).getIntFormedYear();
 
-                                    String diedYear = (String) artistModel.getArtists().get(0).getIntDiedYear();
+                                            String diedYear = (String) artistModel.getArtists().get(0).getIntDiedYear();
 
-                                    if (formedYear != null && diedYear != null) {
-                                        m_ArtistTimeline.setText(String.valueOf(formedYear + " - " + diedYear));
-                                    } else if (formedYear != null) {
-                                        m_ArtistTimeline.setText(String.valueOf(formedYear));
-                                    } else if (diedYear != null) {
-                                        m_ArtistTimeline.setText(String.valueOf(diedYear));
-                                    }
+                                            if (formedYear != null && diedYear != null) {
+                                                m_ArtistTimeline.setText(String.valueOf(formedYear + " - " + diedYear));
+                                            } else if (formedYear != null) {
+                                                m_ArtistTimeline.setText(String.valueOf(formedYear));
+                                            } else if (diedYear != null) {
+                                                m_ArtistTimeline.setText(String.valueOf(diedYear));
+                                            }
 
-                                    //    int disbandedYear = Integer.parseInt(artistModel.getArtists().get(0).getIntFormedYear());
+                                            //    int disbandedYear = Integer.parseInt(artistModel.getArtists().get(0).getIntFormedYear());
 
-                                    Picasso.with(getContext()).load(artistModel.getArtists().get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
+                                            Picasso.with(getContext()).load(artistModel.getArtists().get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
 
 
-                                    String artistImageClearArt = artistModel.getArtists().get(0).getStrArtistClearart();
+                                            String artistImageClearArt = artistModel.getArtists().get(0).getStrArtistClearart();
 
-                                    if (artistImageClearArt == null) {
-                                        artistImageClearArt = artistModel.getArtists().get(0).getStrArtistFanart();
+                                            if (artistImageClearArt == null) {
+                                                artistImageClearArt = artistModel.getArtists().get(0).getStrArtistFanart();
 
-                                    }
-                                    Picasso.with(getContext()).load(artistImageClearArt).into(m_ArtistImageClearArt);
+                                            }
+                                            Picasso.with(getContext()).load(artistImageClearArt).into(m_ArtistImageClearArt);
+                                        }
+                                /*    }catch(Exception ex){
+                                        Toast.makeText(getContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }*/
+
+
 
 
                                 }
@@ -166,15 +173,27 @@ public class SearchByArtistFragment extends Fragment {
             });
             //   m_ArtistLabel.setText("");
 
-       // }
+
     }
 
-
- /*   @Override
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("m_Sv_Artist", m_Sv_Artist.getQuery().toString());
-    }*/
+    //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+        CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
+        outState.putCharSequence("savedSearchViewQuery", searchView);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null){
+      //      Log.i("onRetainInstance", "onRetainInstance");
+            CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+            MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+        }
+    }
+
     /* public void rxArtistViewBySearch(){
         RxSearchView.queryTextChanges(m_Sv_Artist)
                 .debounce(350, TimeUnit.MILLISECONDS)

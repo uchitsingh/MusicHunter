@@ -57,6 +57,24 @@ public class SearchAlbumByArtistFragment extends Fragment {
        //
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //   Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+        CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
+        outState.putCharSequence("savedSearchViewQuery", searchView);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null){
+            //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+            CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+            MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+        }
+    }
+
 
     public void initRecycleView(){
         m_rv_AlbumsDetails = (RecyclerView) getActivity().findViewById(R.id.rv_AlbumsDetails);
@@ -65,7 +83,14 @@ public class SearchAlbumByArtistFragment extends Fragment {
     public void albumViewBySearchArtist(){
        // MainActivity.getM_Sv_Artist().setQuery(,true);
       //  MainActivity.getM_Sv_Artist().seton
-        MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+/*
+        SearchAlbumByArtistFragment searchAlbumByArtistFragment=
+                (SearchAlbumByArtistFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.pager);
+
+            if(searchAlbumByArtistFragment instanceof  SearchAlbumByArtistFragment){
+
+            }*/
+            MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
               //  Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
@@ -76,7 +101,10 @@ public class SearchAlbumByArtistFragment extends Fragment {
                         .subscribe(new Consumer<AlbumsModel>() {
                             @Override
                             public void accept(AlbumsModel albumsModel) throws Exception {
-                             m_rv_AlbumsDetails.setAdapter(new AlbumAdapter(albumsModel));
+                                if(albumsModel!=null && albumsModel.getAlbum().size()>0){
+                                    m_rv_AlbumsDetails.setAdapter(new AlbumAdapter(albumsModel));
+                                }
+
                             }
                         }, new Consumer<Throwable>() {
                             @Override

@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.codepath.musichunter.displaytracksbyAlbum.DisplayTracksByAlbumFragment">
+    tools:context="com.codepath.musichunter.searchtoptenlovedtracksbyArtist.SearchTopTenLovedTracksByArtist">
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_trackDetails"
+        android:id="@+id/rv_Top_Ten_Loved_Tracks"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="wrap_content" />
 </FrameLayout>

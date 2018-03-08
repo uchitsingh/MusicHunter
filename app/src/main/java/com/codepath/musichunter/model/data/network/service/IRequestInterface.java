@@ -2,6 +2,7 @@ package com.codepath.musichunter.model.data.network.service;
 
 import com.codepath.musichunter.model.data.network.model.displaytracksbyalbum.TracksModel;
 import com.codepath.musichunter.model.data.network.model.searchbyartist.ArtistModel;
+import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
 import com.codepath.musichunter.model.data.network.model.searhalbumsbyartist.AlbumsModel;
 
 import io.reactivex.Observable;
@@ -20,6 +21,9 @@ public interface IRequestInterface {
     Observable<AlbumsModel> getAlbums(@Query("s") String artistName);
 
     @GET(ApiList.RELATIVE_URL_Tracks_BY_ALBUMS)
-    Observable<TracksModel> getTracksByAlbums(@Query("m") String albumId);
+    Observable<TracksModel> getTracksByAlbum(@Query("m") String albumId);
+
+    @GET(ApiList.RELATIVE_URL_TOP_TEN_TRACKS_BY_ARTIST)
+    Observable<TopTenLovedTracksByArtistModel> getTopTenLovedTracks(@Query("s") String artistName);
 
 }

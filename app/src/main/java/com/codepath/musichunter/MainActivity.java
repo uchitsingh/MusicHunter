@@ -8,15 +8,16 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.codepath.musichunter.displaytracksbyAlbum.DisplayTracksByAlbumFragment;
 import com.codepath.musichunter.searchalbumsbyartist.SearchAlbumByArtistFragment;
 import com.codepath.musichunter.searchbyartist.SearchByArtistFragment;
+import com.codepath.musichunter.searchtoptenlovedtracksbyArtist.SearchTopTenLovedTracksByArtist;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
 
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     private MusicPagerAdapter musicPagerAdapter;
     private TextView textview;
     private LayoutParams layoutparams;
-    private static SearchView m_Sv_Artist ;
+    private  static  SearchView m_Sv_Artist ;
 
     public static SearchView getM_Sv_Artist() {
         return m_Sv_Artist;
@@ -140,6 +141,23 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     }
 
+/*    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+        CharSequence searchView = m_Sv_Artist.getQuery();
+        outState.putCharSequence("savedSearchViewQuery", searchView);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.i("onRestoreInstanceState", "onRestoreInstanceState");
+        CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+        MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+
+    }*/
 
     //fragmentstatePageAdapter manage fragments page
     public class MusicPagerAdapter extends FragmentStatePagerAdapter {
@@ -167,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                     return searchAlbumByArtistFragment;
                 }
                 case 2: {
-                    Fragment topTenLovedTracksByArtist = new TopTenLovedTracksByArtist();
+                    Fragment topTenLovedTracksByArtist = new SearchTopTenLovedTracksByArtist();
          /*           fragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, topTenLovedTracksByArtist)
                             .disallowAddToBackStack()

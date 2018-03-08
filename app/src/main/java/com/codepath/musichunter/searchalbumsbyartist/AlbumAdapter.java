@@ -28,7 +28,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
     @Override
     public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.album_row, parent, false));
+        return new AlbumViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.row_album, parent, false));
     }
 
     @Override
@@ -39,33 +39,17 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
         holder.callItemClick(new ItemClickListener() {
             @Override
             public void onClick(View view, int position) {
-              //  Toast.makeText(MyApp.getInstance().getAppContext(), albumsModel.getAlbum().get(position).getIntYearReleased(),Toast.LENGTH_SHORT).show();
-            //    iRequestInterface
-
-             //   MainActivity.dispayTracksByAlbum(Integer.parseInt(albumsModel.getAlbum().get(position).getIdAlbum()));
-              //  FragmentManager fragmentManager =;
-                /*Fragment pager= MainActivity.fragmentManager.findFragmentById(R.id.pager);
-
-
-                FragmentTransaction transaction =pager.getChildFragmentManager().beginTransaction();
-                transaction.addToBackStack(null);
-                transaction.replace(R.id, displayTracksByAlbumFragment).commit();
-            */
-                Intent intent = new Intent(MyApp.getInstance().getAppContext(), DisplayTracksByAlbumActivity.class);
-                MyApp.getInstance().getAppContext().startActivity(intent);
-
-                //String message = editText.getText().toString();
-                //intent.putExtra(EXTRA_MESSAGE, message);
+                    String albumId = albumsModel.getAlbum().get(position).getIdAlbum();
+                    Intent intent = new Intent(MyApp.getInstance().getAppContext(), DisplayTracksByAlbumActivity.class);
+                    intent.putExtra("albumId", albumId);
+                    MyApp.getInstance().getAppContext().startActivity(intent);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        if (albumsModel != null) {
             return albumsModel.getAlbum().size();
-        }
-        return 0;
     }
 
 
