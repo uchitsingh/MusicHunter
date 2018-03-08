@@ -1,4 +1,4 @@
-package com.codepath.musichunter.model.data.network.model;
+package com.codepath.musichunter.model.data.network.model.searchbyartist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

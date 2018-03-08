@@ -1,6 +1,8 @@
-package com.codepath.musichunter.model.data.network.model;
+package com.codepath.musichunter.model.data.network.model.searchbyartist;
 import java.io.Serializable;
 import java.util.List;
+
+import com.codepath.musichunter.model.data.network.model.searchbyartist.Artist;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

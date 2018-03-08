@@ -1,51 +1,60 @@
 package com.codepath.musichunter;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.ActionBar;
-import android.app.FragmentTransaction;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
-import java.util.Set;
+import android.widget.SearchView;
+import android.widget.TextView;
 
-import retrofit2.http.Query;
+import com.codepath.musichunter.displaytracksbyAlbum.DisplayTracksByAlbumFragment;
+import com.codepath.musichunter.searchalbumsbyartist.SearchAlbumByArtistFragment;
+import com.codepath.musichunter.searchbyartist.SearchByArtistFragment;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
 
     private ViewPager mViewPager;
     private MusicPagerAdapter musicPagerAdapter;
-    TextView textview;
-    LayoutParams layoutparams;;
+    private TextView textview;
+    private LayoutParams layoutparams;
+    private static SearchView m_Sv_Artist ;
+
+    public static SearchView getM_Sv_Artist() {
+        return m_Sv_Artist;
+    }
+    public static FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentManager = getSupportFragmentManager();
 
-        initToolBar();
+        initViewPager();
+        m_Sv_Artist = (SearchView) findViewById(R.id.sv_artist);
+      //  setRetainInstance(true);
+
     }
 
-    public void initToolBar(){
-        musicPagerAdapter = new MusicPagerAdapter(getSupportFragmentManager());
+
+    public void initViewPager(){
+//        musicPagerAdapter = new MusicPagerAdapter(getSupportFragmentManager());
+        musicPagerAdapter = new MusicPagerAdapter(fragmentManager);
+
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(false);
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        //Make the Title of toolBar centered
+        //Make the Title of actionbar centered
         textview = new TextView(getApplicationContext());
-        layoutparams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        layoutparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         textview.setLayoutParams(layoutparams);
         textview.setText(R.string.app_name);
         textview.setTextColor(Color.WHITE);
@@ -82,7 +91,18 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         }
     }
 
+ /*   @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }*/
+/*
+        @Override
     public void onBackPressed() {
         if (mViewPager.getCurrentItem() == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
@@ -92,8 +112,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             // Otherwise, select the previous step.
             mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
         }
-    }
-
+    }*/
     @Override
     protected void onStop() {
         super.onStop();
@@ -121,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     }
 
+
+    //fragmentstatePageAdapter manage fragments page
     public class MusicPagerAdapter extends FragmentStatePagerAdapter {
         public MusicPagerAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
@@ -131,14 +152,26 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             switch (position) {
                 case 0: {
                     Fragment searchArtistByFragment = new SearchByArtistFragment();
+           /*         fragmentManager.beginTransaction()
+                            .add(R.id.fragment_container, searchArtistByFragment)
+                            .disallowAddToBackStack()
+                            .commit();*/
                     return searchArtistByFragment;
                 }
                 case 1: {
                     Fragment searchAlbumByArtistFragment = new SearchAlbumByArtistFragment();
+              /*      fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, searchAlbumByArtistFragment)
+                            .disallowAddToBackStack()
+                            .commit();*/
                     return searchAlbumByArtistFragment;
                 }
                 case 2: {
                     Fragment topTenLovedTracksByArtist = new TopTenLovedTracksByArtist();
+         /*           fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, topTenLovedTracksByArtist)
+                            .disallowAddToBackStack()
+                            .commit();*/
                     return topTenLovedTracksByArtist;
                 }
 

@@ -8,31 +8,24 @@
     android:layout_height="match_parent"
     tools:context="com.codepath.musichunter.MainActivity">
 
-<!--
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <SearchView
+        android:id="@+id/sv_artist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
--->
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-    <android.support.v4.view.ViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-     <!--   <android.support.v4.view.PagerTitleStrip
-            android:id="@+id/pager_title_strip"
+        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_gravity="top"
-            android:background="#551a8b"
-            android:textColor="#fff"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"/>
--->
-    </android.support.v4.view.ViewPager>
-
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/sv_artist">
+        </android.support.v4.view.ViewPager>
 
 </android.support.constraint.ConstraintLayout>

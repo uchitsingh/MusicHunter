@@ -1,44 +1,30 @@
-package com.codepath.musichunter;
+package com.codepath.musichunter.searchbyartist;
 
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codepath.musichunter.model.data.network.model.ArtistModel;
+import com.codepath.musichunter.MainActivity;
+import com.codepath.musichunter.R;
+import com.codepath.musichunter.model.data.network.model.searchbyartist.ArtistModel;
 import com.codepath.musichunter.model.data.network.service.IRequestInterface;
 import com.codepath.musichunter.model.data.network.service.ServiceConnection;
-import com.jakewharton.rxbinding2.widget.RxSearchView;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -49,11 +35,10 @@ public class SearchByArtistFragment extends Fragment {
 
     //   @BindView(R.id.sv_artist) SearchView m_Sv_Artist;
     //  @BindView(R.id.rv_artistList) RecyclerView m_Rv_ArtistList;
-    private SearchView m_Sv_Artist;
+//   private SearchView m_Sv_Artist;
     //  private RecyclerView m_Rv_ArtistList;
     private Unbinder mUbinder;
     private IRequestInterface iRequestInterface;
-    private ArtistAdapter artistAdapter;
     //   private RelativeLayout rl_ArtistDetails;
     private CardView m_Cv_ArtistDetails;
     private TextView m_ArtistName, m_ArtistBio, m_ArtistGenre, m_ArtistStyle, m_ArtistMood, m_ArtistLabel, m_ArtistCountry, m_ArtistTimeline;
@@ -66,10 +51,10 @@ public class SearchByArtistFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+       // this.setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_search_by_artist, null);
         mUbinder = ButterKnife.bind(getActivity());
-        iRequestInterface = ServiceConnection.getConnection();
+
 
 
         // Inflate the layout for this fragment
@@ -79,20 +64,12 @@ public class SearchByArtistFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //  initRecycleView();
-        m_Sv_Artist = (SearchView) view.findViewById(R.id.sv_artist);
-
+        iRequestInterface = ServiceConnection.getConnection();
         initializeArtistDetalisView(view);
         artistViewBySearch();
-
-
-    }
-
- /*   public void initRecycleView() {
-        m_Rv_ArtistList = (RecyclerView) getActivity().findViewById(R.id.rv_artistList);
-        m_Rv_ArtistList.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-    }*/
+        //  initRecycleView();
+     //   setRetainInstance(true);
+  }
 
 
     public void initializeArtistDetalisView(View view) {
@@ -113,86 +90,92 @@ public class SearchByArtistFragment extends Fragment {
     }
 
     public void artistViewBySearch() {
-        m_Sv_Artist.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                iRequestInterface.getArtists(s)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<ArtistModel>() {
-                            @Override
-                            public void accept(ArtistModel artistModel) throws Exception {
-                                //         Toast.makeText(getContext(), artistModel.getArtists().get(0).getStrBiographyEN(), Toast.LENGTH_SHORT).show();
-                                //        Log.i("bio", artistModel.getArtists().get(0).getStrBiographyEN());
-                                //m_Rv_ArtistList.setAdapter(new ArtistAdapter(artistModel));
-                                // rl_ArtistDetails.setVisibility(View.VISIBLE);
-                                m_Cv_ArtistDetails.setVisibility(View.VISIBLE);
-                        //        m_ArtistName.setText(artistModel.getArtists().get(0).getStrArtist());
-                                m_ArtistBio.setText(artistModel.getArtists().get(0).getStrBiographyEN());
-                                m_ArtistGenre.setText(artistModel.getArtists().get(0).getStrGenre());
-                                m_ArtistStyle.setText(artistModel.getArtists().get(0).getStrStyle());
-                                m_ArtistMood.setText(artistModel.getArtists().get(0).getStrMood());
+        //    MainActivity mainActivity  = new MainActivity();
+      //  if(savedInstance!=null) {
+              MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    iRequestInterface.getArtists(s)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<ArtistModel>() {
+                                @Override
+                                public void accept(ArtistModel artistModel) throws Exception {
+                                    //         Toast.makeText(getContext(), artistModel.getArtists().get(0).getStrBiographyEN(), Toast.LENGTH_SHORT).show();
+                                    //        Log.i("bio", artistModel.getArtists().get(0).getStrBiographyEN());
+                                    //m_Rv_ArtistList.setAdapter(new ArtistAdapter(artistModel));
+                                    // rl_ArtistDetails.setVisibility(View.VISIBLE);
+                                    m_Cv_ArtistDetails.setVisibility(View.VISIBLE);
+                                    //        m_ArtistName.setText(artistModel.getArtists().get(0).getStrArtist());
+                                    m_ArtistBio.setText(artistModel.getArtists().get(0).getStrBiographyEN());
+                                    m_ArtistGenre.setText(artistModel.getArtists().get(0).getStrGenre());
+                                    m_ArtistStyle.setText(artistModel.getArtists().get(0).getStrStyle());
+                                    m_ArtistMood.setText(artistModel.getArtists().get(0).getStrMood());
 
-                                String artist_Label = artistModel.getArtists().get(0).getStrLabel();
-                                if (artist_Label != null) {
-                                    m_ArtistLabel.setText(artistModel.getArtists().get(0).getStrLabel());
-                                } else {
-                                    m_ArtistLabel.setText("N/A");
-                                }
+                                    String artist_Label = artistModel.getArtists().get(0).getStrLabel();
+                                    if (artist_Label != null) {
+                                        m_ArtistLabel.setText(artistModel.getArtists().get(0).getStrLabel());
+                                    } else {
+                                        m_ArtistLabel.setText("N/A");
+                                    }
 
-                                m_ArtistCountry.setText(artistModel.getArtists().get(0).getStrCountry());
+                                    m_ArtistCountry.setText(artistModel.getArtists().get(0).getStrCountry());
 
-                                String formedYear = artistModel.getArtists().get(0).getIntFormedYear();
+                                    String formedYear = artistModel.getArtists().get(0).getIntFormedYear();
 
-                                String diedYear = (String)artistModel.getArtists().get(0).getIntDiedYear();
+                                    String diedYear = (String) artistModel.getArtists().get(0).getIntDiedYear();
 
-                                if(formedYear!=null && diedYear !=null ){
-                                    m_ArtistTimeline.setText(String.valueOf(formedYear + " - " + diedYear));
-                                }else if(formedYear!=null){
-                                    m_ArtistTimeline.setText(String.valueOf(formedYear));
-                                }else if(diedYear!=null){
-                                    m_ArtistTimeline.setText(String.valueOf(diedYear));
-                                }
+                                    if (formedYear != null && diedYear != null) {
+                                        m_ArtistTimeline.setText(String.valueOf(formedYear + " - " + diedYear));
+                                    } else if (formedYear != null) {
+                                        m_ArtistTimeline.setText(String.valueOf(formedYear));
+                                    } else if (diedYear != null) {
+                                        m_ArtistTimeline.setText(String.valueOf(diedYear));
+                                    }
 
-                                //    int disbandedYear = Integer.parseInt(artistModel.getArtists().get(0).getIntFormedYear());
+                                    //    int disbandedYear = Integer.parseInt(artistModel.getArtists().get(0).getIntFormedYear());
 
-                                Picasso.with(getContext()).load(artistModel.getArtists().get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
+                                    Picasso.with(getContext()).load(artistModel.getArtists().get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
 
 
+                                    String artistImageClearArt = artistModel.getArtists().get(0).getStrArtistClearart();
 
-                                String artistImageClearArt = artistModel.getArtists().get(0).getStrArtistClearart();
+                                    if (artistImageClearArt == null) {
+                                        artistImageClearArt = artistModel.getArtists().get(0).getStrArtistFanart();
 
-                                if(artistImageClearArt==null){
-                                    artistImageClearArt = artistModel.getArtists().get(0).getStrArtistFanart();
-
-                                }
+                                    }
                                     Picasso.with(getContext()).load(artistImageClearArt).into(m_ArtistImageClearArt);
 
 
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Log.i("error", throwable.getMessage());
+                                }
+                            });
+                    return true;
+                }
 
 
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                Log.i("error", throwable.getMessage());
-                            }
-                        });
-                return true;
-            }
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    return false;
+                }
+            });
+            //   m_ArtistLabel.setText("");
 
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
-     //   m_ArtistLabel.setText("");
+       // }
     }
 
 
-   /* public void rxArtistViewBySearch(){
+ /*   @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("m_Sv_Artist", m_Sv_Artist.getQuery().toString());
+    }*/
+    /* public void rxArtistViewBySearch(){
         RxSearchView.queryTextChanges(m_Sv_Artist)
                 .debounce(350, TimeUnit.MILLISECONDS)
                 .subscribeOn(AndroidSchedulers.mainThread())
