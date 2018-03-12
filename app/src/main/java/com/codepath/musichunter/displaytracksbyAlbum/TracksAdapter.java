@@ -30,6 +30,8 @@ import com.codepath.musichunter.model.data.network.model.displaytracksbyalbum.Tr
 
         holder.m_Albums_TrackName.setText(tracksModel.getTrack().get(position).getStrTrack());
         holder.m_Albums_TrackNumber.setText(tracksModel.getTrack().get(position).getIntTrackNumber());
+
+
         //String desc = tracksModel.getTrack().get(position).getStrDescriptionEN().toString();
       /*  if (tracksModel.getTrack().get(position).getStrDescriptionEN().toString() != null && tracksModel.getTrack().get(position).getStrDescriptionEN().toString().length()>0 ){
             String desc = tracksModel.getTrack().get(position).getStrDescriptionEN().toString();
@@ -53,7 +55,7 @@ import com.codepath.musichunter.model.data.network.model.displaytracksbyalbum.Tr
             super(itemView);
             m_Albums_TrackNumber = itemView.findViewById(R.id.tv_Albums_TrackNumber);
             m_Albums_TrackName = itemView.findViewById(R.id.tv_Albums_TrackName);
-            m_Albums_AlbumDescription = itemView.findViewById(R.id.tv_AlbumDescription);
+
         }
     }
 }

@@ -4,13 +4,18 @@ import android.util.Log;
 
 
 import com.codepath.musichunter.MyApp;
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.IOException;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -96,4 +101,25 @@ public class ServiceConnection {
             }
         };
     }
+
+    public static class OfflineResponseCacheInterceptor implements Interceptor {
+        @Override
+        public okhttp3.Response intercept(Chain chain) throws IOException {
+            final Request[] request = {chain.request()};
+            ReactiveNetwork.observeInternetConnectivity()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Boolean>() {
+                        @Override
+                        public void accept(Boolean aBoolean) throws Exception {
+                            request[0] = request[0].newBuilder()
+                                    .header("Cache-Control",
+                                            "public, only-if-cached, max-stale=" + 2419200)
+                                    .build();
+                        }
+                    });
+            return chain.proceed(request[0]);
+        }
+    }
+
 }

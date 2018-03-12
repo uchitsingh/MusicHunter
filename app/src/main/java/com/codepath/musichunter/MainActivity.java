@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout.LayoutParams;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     private MusicPagerAdapter musicPagerAdapter;
     private TextView textview;
     private LayoutParams layoutparams;
-    private  static  SearchView m_Sv_Artist ;
+    private static SearchView m_Sv_Artist ;
 
     public static SearchView getM_Sv_Artist() {
         return m_Sv_Artist;
@@ -35,19 +36,17 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fragmentManager = getSupportFragmentManager();
-
+        if(savedInstanceState==null){
+            fragmentManager = getSupportFragmentManager();
+        }
         initViewPager();
         m_Sv_Artist = (SearchView) findViewById(R.id.sv_artist);
-      //  setRetainInstance(true);
-
     }
 
 
     public void initViewPager(){
 //        musicPagerAdapter = new MusicPagerAdapter(getSupportFragmentManager());
         musicPagerAdapter = new MusicPagerAdapter(fragmentManager);
-
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(false);
         // Specify that tabs should be displayed in the action bar.
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         mViewPager.setAdapter(musicPagerAdapter);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+ /*       mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 // When swiping between different app sections, select the corresponding tab.
@@ -79,7 +78,28 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                 // Tab.
                 actionBar.setSelectedNavigationItem(position);
             }
+        });*/
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+              // actionBar.setSelectedNavigationItem(position);
+              // actionBar.setScrollPosition(position,0f,true);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+               // actionBar.setSelectedNavigationItem(position);
+               actionBar.getTabAt(position).select();
+              //  mViewPager.setCurrentItem(position,false);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
+
+      //  actionBar.setupWithViewPager(this.mViewPager);
 
 
         // Add 3 tabs, specifying the tab's text and TabListener
@@ -90,6 +110,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .setTabListener(this)
             );
         }
+
+
+
+
     }
 
  /*   @Override
@@ -141,32 +165,19 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     }
 
-/*    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
-        CharSequence searchView = m_Sv_Artist.getQuery();
-        outState.putCharSequence("savedSearchViewQuery", searchView);
 
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.i("onRestoreInstanceState", "onRestoreInstanceState");
-        CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
-        MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
-
-    }*/
 
     //fragmentstatePageAdapter manage fragments page
     public class MusicPagerAdapter extends FragmentStatePagerAdapter {
+        private SparseArray<Fragment> array = new SparseArray<>();
         public MusicPagerAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
         }
 
         @Override
         public Fragment getItem(int position) {
+
+
             switch (position) {
                 case 0: {
                     Fragment searchArtistByFragment = new SearchByArtistFragment();
@@ -174,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .add(R.id.fragment_container, searchArtistByFragment)
                             .disallowAddToBackStack()
                             .commit();*/
+                    array.setValueAt(0, searchArtistByFragment);
                     return searchArtistByFragment;
                 }
                 case 1: {
@@ -182,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .replace(R.id.fragment_container, searchAlbumByArtistFragment)
                             .disallowAddToBackStack()
                             .commit();*/
+                    array.setValueAt(1, searchAlbumByArtistFragment);
                     return searchAlbumByArtistFragment;
                 }
                 case 2: {
@@ -190,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .replace(R.id.fragment_container, topTenLovedTracksByArtist)
                             .disallowAddToBackStack()
                             .commit();*/
+                    array.setValueAt(2, topTenLovedTracksByArtist);
                     return topTenLovedTracksByArtist;
                 }
 
@@ -216,6 +230,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                     return "Top Ten";
             }
             return "OBJECT " + (position + 1);
+        }
+
+        public SparseArray<Fragment> getFragmentArray() {
+            return array;
         }
     }
 
@@ -295,4 +313,23 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             }
         }
     }
+
+/*    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+        CharSequence searchView = m_Sv_Artist.getQuery();
+        outState.putCharSequence("savedSearchViewQuery", searchView);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.i("onRestoreInstanceState", "onRestoreInstanceState");
+        CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+        MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+
+    }*/
+
 }

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.codepath.musichunter.R;
 import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,9 +35,17 @@ class TopTenLovedTracksAdapter extends RecyclerView.Adapter<TopTenLovedTracksAda
       //  int min = convertMillisecondsToMinute(Integer.parseInt(topTenLovedTracksByArtistModel.getTrack().get(position).getIntDuration()));
        long minutes = TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(topTenLovedTracksByArtistModel.getTrack().get(position).getIntDuration())) % 60;
        long seconds = TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(topTenLovedTracksByArtistModel.getTrack().get(position).getIntDuration())) % 60;
-        //String.format("%d Minutes %d Seconds", minutes, seconds);
-       holder.m_TrackDescription.setText(String.format("%dm %ds" , minutes, seconds));
-       holder.m_TrackScore.setText(String.valueOf(topTenLovedTracksByArtistModel.getTrack().get(position).getIntScore()));
+       String duration = String.format("%dm %ds" , minutes, (seconds));
+       holder.m_TrackDescription.setText(duration);
+       /*
+       Todo: Change 10/10 into 10 stars
+        */
+
+       String score = (String) topTenLovedTracksByArtistModel.getTrack().get(position).getIntScore();
+       // String num = score.substring(0, score.indexOf("."));
+       holder.m_TrackScore.setText( score + "/10");
+
+
     }
 
     @Override

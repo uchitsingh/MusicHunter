@@ -16,13 +16,19 @@ import android.widget.Toast;
 import com.codepath.musichunter.MainActivity;
 import com.codepath.musichunter.R;
 import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
-import com.codepath.musichunter.model.data.network.model.searhalbumsbyartist.AlbumsModel;
+
 import com.codepath.musichunter.model.data.network.service.IRequestInterface;
 import com.codepath.musichunter.model.data.network.service.ServiceConnection;
 import com.codepath.musichunter.searchalbumsbyartist.AlbumAdapter;
+import com.jakewharton.rxbinding2.widget.RxSearchView;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -32,7 +38,8 @@ import io.reactivex.schedulers.Schedulers;
 public class SearchTopTenLovedTracksByArtist extends Fragment {
 
     private IRequestInterface iRequestInterface;
-    private RecyclerView m_rv_Top_Ten_Loved_Tracks_;
+    private RecyclerView m_rv_Top_Ten_Loved_Tracks;
+    private SearchView m_Sv_Artist;
     public SearchTopTenLovedTracksByArtist() {
         // Required empty public constructor
     }
@@ -52,34 +59,25 @@ public class SearchTopTenLovedTracksByArtist extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         iRequestInterface = ServiceConnection.getConnection();
         initRecycleView();
-         topTenLovedTracksViewByArtist();
-    }
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-     //   Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
-        CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
-        outState.putCharSequence("savedSearchViewQuery", searchView);
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState!=null){
-        //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
-            CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
-            MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
-        }
+        /*CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
+        MainActivity.getM_Sv_Artist().setQuery(searchView, true);*/
+  //     topTenLovedTracksViewByArtist();
+
+       // rxTopTenViewBySearch();
     }
 
 
 
     private void initRecycleView() {
-        m_rv_Top_Ten_Loved_Tracks_ = (RecyclerView) getActivity().findViewById(R.id.rv_Top_Ten_Loved_Tracks);
-        m_rv_Top_Ten_Loved_Tracks_.setLayoutManager(new LinearLayoutManager(getActivity()));
+        m_rv_Top_Ten_Loved_Tracks = (RecyclerView) getActivity().findViewById(R.id.rv_Top_Ten_Loved_Tracks);
+        m_rv_Top_Ten_Loved_Tracks.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void topTenLovedTracksViewByArtist() {
+        Log.i("1010", "1010");
+
+
 
             MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
@@ -92,9 +90,9 @@ public class SearchTopTenLovedTracksByArtist extends Fragment {
                                 public void accept(TopTenLovedTracksByArtistModel topTenLovedTracksByArtistModel) throws Exception {
                                     //    Toast.makeText(getContext(), topTenLovedTracksByArtistModel.getTrack().get(0).getStrTrack(), Toast.LENGTH_SHORT).show();
 
-                                      if (topTenLovedTracksByArtistModel != null && topTenLovedTracksByArtistModel.getTrack().size() > 0) {
-                                          m_rv_Top_Ten_Loved_Tracks_.setAdapter(new TopTenLovedTracksAdapter(topTenLovedTracksByArtistModel));
-                                      }
+                                    if (topTenLovedTracksByArtistModel != null && topTenLovedTracksByArtistModel.getTrack().size() > 0) {
+                                        m_rv_Top_Ten_Loved_Tracks.setAdapter(new TopTenLovedTracksAdapter(topTenLovedTracksByArtistModel));
+                                    }
 
                                 }
                             }, new Consumer<Throwable>() {
@@ -105,15 +103,87 @@ public class SearchTopTenLovedTracksByArtist extends Fragment {
                             });
 
                     return true;
+
                 }
 
 
                 @Override
                 public boolean onQueryTextChange(String s) {
-
                     return false;
                 }
             });
         }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser)
+        {
+           topTenLovedTracksViewByArtist();
+          //  rxTopTenViewBySearch();
+        }
+    }
+
+
+
+    public void rxTopTenViewBySearch(){
+        m_Sv_Artist = MainActivity.getM_Sv_Artist();
+        RxSearchView.queryTextChanges(m_Sv_Artist)
+                .debounce(350, TimeUnit.MILLISECONDS)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .filter(new Predicate<CharSequence>() {
+                    @Override
+                    public boolean test(CharSequence charSequence) throws Exception {
+                        return !charSequence.toString().isEmpty();
+                    }
+                })
+                //   .distinctUntilChanged()
+                .subscribeOn(Schedulers.io())
+                .switchMap(new Function<CharSequence, ObservableSource<TopTenLovedTracksByArtistModel>>() {
+                    @Override
+                    public ObservableSource<TopTenLovedTracksByArtistModel> apply(CharSequence query) throws Exception {
+                        return iRequestInterface.getTopTenLovedTracks(query.toString());
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<TopTenLovedTracksByArtistModel>() {
+                               @Override
+                               public void accept(TopTenLovedTracksByArtistModel topTenLovedTracksByArtistModel) throws Exception {
+
+                                   if (topTenLovedTracksByArtistModel != null && topTenLovedTracksByArtistModel.getTrack().size() > 0) {
+                                       m_rv_Top_Ten_Loved_Tracks.setAdapter(new TopTenLovedTracksAdapter(topTenLovedTracksByArtistModel));
+                                   }
+
+                               }
+                           },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Toast.makeText(getActivity(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
+        outState.putCharSequence("savedSearchViewQuery", searchView);
+
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null){
+            //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
+            CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
+            MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+        }
+    }
 
 }
