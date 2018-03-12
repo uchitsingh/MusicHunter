@@ -1,5 +1,6 @@
 package com.codepath.musichunter.model.data.network;
 
+import com.codepath.musichunter.model.data.network.model.displaylyricsbyartistandtitle.LyricModel;
 import com.codepath.musichunter.model.data.network.model.displaytracksbyalbum.TracksModel;
 import com.codepath.musichunter.model.data.network.model.searchbyartist.ArtistModel;
 import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
@@ -37,5 +38,10 @@ public class AppDataManager implements IDataManager {
     @Override
     public Observable<TopTenLovedTracksByArtistModel> getTopTenLovedTracks(String artistName) {
         return iApiHelper.getTopTenLovedTracks(artistName);
+    }
+
+    @Override
+    public Observable<LyricModel> getLyric(String artist, String title) {
+        return iApiHelper.getLyric(artist,title);
     }
 }

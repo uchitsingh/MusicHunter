@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context="com.codepath.musichunter.MainActivity">
 
+
+
     <SearchView
         android:id="@+id/sv_artist"
         android:layout_width="match_parent"

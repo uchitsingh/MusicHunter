@@ -22,4 +22,10 @@ public class ApiList {
     /* Search Top ten Loved tracks By Artist: track-top10.php?s=coldplay*/
     public static final String RELATIVE_URL_TOP_TEN_TRACKS_BY_ARTIST = "json/1/track-top10.php";
 
+
+    //https://api.lyrics.ovh/v1/coldplay/yellow
+    public static final String BASE_URL_LYRICS= "https://api.lyrics.ovh/v1/";
+    public static final String RELATIVE_URL_LYRICS_BY_ARTIST_AND_TITLE="{artist}/{title}";
+
+
 }

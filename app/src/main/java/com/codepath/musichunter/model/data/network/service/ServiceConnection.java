@@ -34,7 +34,7 @@ public class ServiceConnection {
     private static final int MAX_AGE = 60;
     private static final String HEADER_NAME = "Cache-Control";
 
-   public static IRequestInterface getConnection(){
+   public static IRequestInterface getConnection(String base_Url){
 
        // Location of the cache.
        //File httpCacheDirectory = new File(MyApp.getInstance().getAppContext().getCacheDir(),  "responses");
@@ -66,7 +66,7 @@ public class ServiceConnection {
 
 
        retrofit= new Retrofit.Builder()
-               .baseUrl(ApiList.BASE_URL)
+               .baseUrl(base_Url)
                .client(client)
                .addCallAdapterFactory(RxJava2CallAdapterFactory.create()) //Allows to inflate the recyclerview adapter
                .addConverterFactory(GsonConverterFactory.create())// adds gson converter

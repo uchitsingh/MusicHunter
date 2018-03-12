@@ -95,7 +95,7 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
  /*       CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
         MainActivity.getM_Sv_Artist().setQuery(searchView, true);*/
 //        callArtistViewBySearch();
-
+        refreshLayout.setEnabled(false);
     }
 
     public void callArtistViewBySearch() {
@@ -143,7 +143,7 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
         MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                ///refreshLayout.setEnabled(true);
+                refreshLayout.setEnabled(true);
                     refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                         @Override
                         public void onRefresh() {

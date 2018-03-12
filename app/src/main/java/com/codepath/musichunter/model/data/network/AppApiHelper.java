@@ -1,9 +1,11 @@
 package com.codepath.musichunter.model.data.network;
 
+import com.codepath.musichunter.model.data.network.model.displaylyricsbyartistandtitle.LyricModel;
 import com.codepath.musichunter.model.data.network.model.displaytracksbyalbum.TracksModel;
 import com.codepath.musichunter.model.data.network.model.searchbyartist.ArtistModel;
 import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
 import com.codepath.musichunter.model.data.network.model.searhalbumsbyartist.AlbumsModel;
+import com.codepath.musichunter.model.data.network.service.ApiList;
 import com.codepath.musichunter.model.data.network.service.IRequestInterface;
 import com.codepath.musichunter.model.data.network.service.ServiceConnection;
 
@@ -14,9 +16,11 @@ import io.reactivex.Observable;
  */
 
 public class AppApiHelper implements IApiHelper {
-    private IRequestInterface iRequestInterface;
+    private IRequestInterface iRequestInterface, IRequestInterface_Lyrics;
+
     public AppApiHelper() {
-        iRequestInterface = ServiceConnection.getConnection();
+        iRequestInterface = ServiceConnection.getConnection(ApiList.BASE_URL);
+        IRequestInterface_Lyrics = ServiceConnection.getConnection(ApiList.BASE_URL_LYRICS);
     }
 
     @Override
@@ -38,4 +42,11 @@ public class AppApiHelper implements IApiHelper {
     public Observable<TopTenLovedTracksByArtistModel> getTopTenLovedTracks(String artistName) {
         return iRequestInterface.getTopTenLovedTracks(artistName);
     }
+
+    @Override
+    public Observable<LyricModel> getLyric(String artist, String title) {
+        return IRequestInterface_Lyrics.getLyric(artist, title);
+    }
+
+
 }

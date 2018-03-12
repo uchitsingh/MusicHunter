@@ -9,5 +9,7 @@
     <string name="some_error">Some Error Occurred!</string>
     <string name="connection_error">Internet connection lost!</string>
 
+    <string name="default_image">http://saveabandonedbabies.org/wp-content/uploads/2015/08/default.png</string>
+
 
 </resources>

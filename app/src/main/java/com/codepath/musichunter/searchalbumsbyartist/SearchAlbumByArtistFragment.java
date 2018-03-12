@@ -55,7 +55,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRecycleView();
-     //   refreshLayout.setEnabled(false);
+        refreshLayout.setEnabled(false);
     //  callAlbumViewBySearchArtist();
       /*  CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
         MainActivity.getM_Sv_Artist().setQuery(searchView, true);*/
@@ -68,7 +68,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
     }
 
 
-    public void callAlbumViewBySearchArtist() {
+    private void callAlbumViewBySearchArtist() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -110,9 +110,6 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
             }
             @Override
             public boolean onQueryTextChange(String s) {
-
-
-
                 return false;
             }
         });

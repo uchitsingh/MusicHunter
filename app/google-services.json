@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "681712371803",
+    "firebase_url": "https://music-hunter-a30b4.firebaseio.com",
+    "project_id": "music-hunter-a30b4",
+    "storage_bucket": "music-hunter-a30b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681712371803:android:bb26c70813e06116",
+        "android_client_info": {
+          "package_name": "com.codepath.musichunter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681712371803-mt8lb31ddqv48s6mau031gu64tounl7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWvLAWNkUFiFBBHYDMoJwuEw2v7NYdwSs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

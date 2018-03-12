@@ -1,4 +1,4 @@
-package com.codepath.musichunter.searchbyartist;
+package com.codepath.musichunter;
 
 import android.view.View;
 
