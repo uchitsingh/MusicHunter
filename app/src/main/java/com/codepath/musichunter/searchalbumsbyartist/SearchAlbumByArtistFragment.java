@@ -61,6 +61,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         super.onViewCreated(view, savedInstanceState);
         initRecycleView();
 
+/*
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -69,14 +70,16 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         });
 
         searchAlbumByArtistPresenter.loadAlbumByArtistInformation(getString(R.string.default_artist));
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+*/
+
+      /*  refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 callAlbumViewBySearchArtist();
             }
         });
 
-         callAlbumViewBySearchArtist();
+         callAlbumViewBySearchArtist();*/
     }
 
 
@@ -125,7 +128,12 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
 
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, "santana");
+        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, getString(R.string.default_artist));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+            }});
         searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
 
         SharedPreferences.OnSharedPreferenceChangeListener listener  =
@@ -134,7 +142,17 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
                         // listener implementation
                         if (key.equals(MainActivity.searchView_Name)){
                             String searchValue = prefs.getString(key, MainActivity.getM_Sv_Artist().getQuery().toString());
-                            searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+                            try {
+                                refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                    @Override
+                                    public void onRefresh() {
+                                        searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+                                    }});
+                                searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+                            }catch(Exception ex){
+                                Log.i("errorONsharedPreference", ex.getMessage());
+                            }
+
 
                         }
                     }
@@ -192,8 +210,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         hideLoading();
     }
 
-
-    @Override
+/*    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //   Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
@@ -210,7 +227,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
             MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
 
         }
-    }
+    }*/
 
 
 

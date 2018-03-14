@@ -102,21 +102,23 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+/*        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 searchByArtistPresenterIml.loadArtistInformation(getString(R.string.default_artist));
             }
         });
-        searchByArtistPresenterIml.loadArtistInformation(getString(R.string.default_artist));
+        searchByArtistPresenterIml.loadArtistInformation(getString(R.string.default_artist));*/
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+   /*     refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 callArtistViewBySearch();
             }
         });
-        callArtistViewBySearch();
+
+
+        callArtistViewBySearch();*/
 
     }
     @Override
@@ -154,7 +156,12 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
         Log.i("artistSearch", "artistSearchView");
 
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, "santana");
+        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, getString(R.string.default_artist));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                searchByArtistPresenterIml.loadArtistInformation(searchValue);
+            }});
         searchByArtistPresenterIml.loadArtistInformation(searchValue);
 
         SharedPreferences.OnSharedPreferenceChangeListener listener  =
@@ -163,7 +170,18 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
                             // listener implementation
                         if (key.equals(MainActivity.searchView_Name)){
                             String searchValue = prefs.getString(key, MainActivity.getM_Sv_Artist().getQuery().toString());
-                            searchByArtistPresenterIml.loadArtistInformation(searchValue);
+                          /*
+                            });*/try {
+                                refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                    @Override
+                                    public void onRefresh() {
+                                        searchByArtistPresenterIml.loadArtistInformation(searchValue);
+                                    }});
+                                searchByArtistPresenterIml.loadArtistInformation(searchValue);
+                            }catch(Exception ex){
+                              Log.i("errorONsharedPreference", ex.getMessage());
+                            }
+
 
                         }
                     }
@@ -269,7 +287,7 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     }
 
 
-    @Override
+  /*  @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
@@ -286,7 +304,7 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
             MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
         }
     }
-
+*/
 
 
 

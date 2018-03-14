@@ -45,6 +45,13 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             initViewPager();
             m_Sv_Artist = (SearchView) findViewById(R.id.sv_artist);
 
+        /*    if (m_Sv_Artist.getQuery().toString().isEmpty()) {
+                m_Sv_Artist.setQuery( getString(R.string.default_artist), false);
+            }else{
+                m_Sv_Artist.setQuery( m_Sv_Artist.getQuery().toString(), false);
+                m_Sv_Artist.clearFocus();
+            }*/
+
             m_Sv_Artist.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
@@ -91,15 +98,6 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         mViewPager.setAdapter(musicPagerAdapter);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
- /*       mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                // When swiping between different app sections, select the corresponding tab.
-                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
-                // Tab.
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });*/
 
 
         //  actionBar.setupWithViewPager(this.mViewPager);
@@ -113,11 +111,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .setTabListener(this)
             );
         }
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+
+    /*    mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                // actionBar.setSelectedNavigationItem(position);
-                // actionBar.setScrollPosition(position,0f,true);
+
             }
 
             @Override
@@ -130,10 +129,21 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             public void onPageScrollStateChanged(int state) {
 
             }
+        });*/
+
+         // actionBar.getTabAt(1).select();
+
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                // When swiping between different app sections, select the corresponding tab.
+                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
+                // Tab.
+                actionBar.setSelectedNavigationItem(position);
+            }
         });
 
-          actionBar.getTabAt(1).select();
-
+        actionBar.setSelectedNavigationItem(1);
     }
 
     /*   @Override
@@ -339,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         CharSequence searchView = m_Sv_Artist.getQuery();
         outState.putCharSequence("savedSearchViewQuery", searchView);
 
+
     }
 
     @Override
@@ -346,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         super.onRestoreInstanceState(savedInstanceState);
         Log.i("onRestoreInstanceState", "onRestoreInstanceState");
         CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
-        MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
+         m_Sv_Artist.setQuery(searchViewQuery, true);
 
     }*/
 

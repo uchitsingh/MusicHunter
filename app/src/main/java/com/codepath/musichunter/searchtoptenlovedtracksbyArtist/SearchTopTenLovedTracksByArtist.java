@@ -73,23 +73,24 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
         super.onViewCreated(view, savedInstanceState);
         initRecycleView();
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+    /*    refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(getString(R.string.default_artist));
             }
         });
         searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(getString(R.string.default_artist));
-        callTopTenLovedTracksViewByArtist();
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+*/
+
+     /*   refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 callTopTenLovedTracksViewByArtist();
             }
         });
 
-
+        callTopTenLovedTracksViewByArtist();*/
     }
 
     @Override
@@ -113,7 +114,12 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
 
 
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, "santana");
+        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, getString(R.string.default_artist));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+            }});
         searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
 
 
@@ -123,7 +129,17 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
                         // listener implementation
                         if (key.equals(MainActivity.searchView_Name)){
                             String searchValue = prefs.getString(key, MainActivity.getM_Sv_Artist().getQuery().toString());
-                            searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+                            try {
+                                refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                                    @Override
+                                    public void onRefresh() {
+                                        searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+                                    }});
+                                searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+                            }catch(Exception ex){
+                                Log.i("errorONsharedPreference", ex.getMessage());
+                            }
+
 
                         }
                     }
@@ -206,7 +222,7 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
     }
 
 
-    @Override
+/*    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -224,7 +240,7 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
             CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
             MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
         }
-    }
+    }*/
 
 
 /*    public void rxTopTenViewBySearch(){
