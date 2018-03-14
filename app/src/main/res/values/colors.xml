@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="actionbar_main_background">#800080</color>
+   <!-- <color name="actionbar_main_background">#662a48</color>-->
     <color name="actionbar_main_TitleTextColor">#ffffff</color>
 
     <color name="actionbar_tab_background">@color/colorAccent</color>

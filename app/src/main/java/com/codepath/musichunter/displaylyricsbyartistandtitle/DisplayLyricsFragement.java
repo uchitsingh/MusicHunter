@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.musichunter.R;
+
 import com.codepath.musichunter.model.data.network.AppDataManager;
 import com.codepath.musichunter.model.data.network.model.displaylyricsbyartistandtitle.LyricModel;
 import com.codepath.musichunter.model.data.network.service.ApiList;
@@ -93,6 +94,11 @@ public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyri
                             Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
                         }
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
 
     }
@@ -106,7 +112,11 @@ public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyri
     @Override
     public void onFetchDataSuccess(LyricModel lyricModel) {
         refreshLayout.setRefreshing(false);
-        m_lyrics.setText(lyricModel.getLyrics());
+     //   if (lyricModel != null && lyricModel.getLyrics().length() > 0) {
+            if (lyricModel != null && !lyricModel.getLyrics().isEmpty()) {
+            m_lyrics.setText(lyricModel.getLyrics());
+        }
+
         hideLoading();
     }
 

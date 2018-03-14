@@ -1,7 +1,10 @@
 package com.codepath.musichunter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -21,30 +24,47 @@ import com.codepath.musichunter.searchbyartist.SearchByArtistFragment;
 import com.codepath.musichunter.searchtoptenlovedtracksbyArtist.SearchTopTenLovedTracksByArtist;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
-
+    public static FragmentManager fragmentManager;
     private ViewPager mViewPager;
     private MusicPagerAdapter musicPagerAdapter;
     private TextView textview;
     private LayoutParams layoutparams;
-    private static SearchView m_Sv_Artist ;
-
+    private static SearchView m_Sv_Artist;
     public static SearchView getM_Sv_Artist() {
         return m_Sv_Artist;
     }
-    public static FragmentManager fragmentManager;
+    public static final String searchView_Name = "searchViewKey";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState==null){
+        if (savedInstanceState == null) {
             fragmentManager = getSupportFragmentManager();
+
+            initViewPager();
+            m_Sv_Artist = (SearchView) findViewById(R.id.sv_artist);
+
+            m_Sv_Artist.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+
+                    SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();// sharedPreferences = getSharedPreferences();
+                    editor.putString(searchView_Name, s);
+                    editor.commit();
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    return false;
+                }
+            });
         }
-        initViewPager();
-        m_Sv_Artist = (SearchView) findViewById(R.id.sv_artist);
     }
 
 
-    public void initViewPager(){
+    public void initViewPager() {
 //        musicPagerAdapter = new MusicPagerAdapter(getSupportFragmentManager());
         musicPagerAdapter = new MusicPagerAdapter(fragmentManager);
         final ActionBar actionBar = getSupportActionBar();
@@ -60,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         textview.setTextColor(Color.WHITE);
         textview.setGravity(Gravity.CENTER);
         textview.setTextSize(20);
+
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(textview);
 
@@ -79,27 +100,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                 actionBar.setSelectedNavigationItem(position);
             }
         });*/
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener(){
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-              // actionBar.setSelectedNavigationItem(position);
-              // actionBar.setScrollPosition(position,0f,true);
-            }
 
-            @Override
-            public void onPageSelected(int position) {
-               // actionBar.setSelectedNavigationItem(position);
-               actionBar.getTabAt(position).select();
-              //  mViewPager.setCurrentItem(position,false);
-            }
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-      //  actionBar.setupWithViewPager(this.mViewPager);
+        //  actionBar.setupWithViewPager(this.mViewPager);
 
 
         // Add 3 tabs, specifying the tab's text and TabListener
@@ -110,22 +113,39 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .setTabListener(this)
             );
         }
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // actionBar.setSelectedNavigationItem(position);
+                // actionBar.setScrollPosition(position,0f,true);
+            }
 
+            @Override
+            public void onPageSelected(int position) {
+                //     actionBar.setSelectedNavigationItem(position);
+                actionBar.getTabAt(position).select();
+            }
 
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+          actionBar.getTabAt(1).select();
 
     }
 
- /*   @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    /*   @Override
+       protected void onSaveInstanceState(Bundle outState) {
+           super.onSaveInstanceState(outState);
 
-    }
+       }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }*/
+       @Override
+       protected void onRestoreInstanceState(Bundle savedInstanceState) {
+           super.onRestoreInstanceState(savedInstanceState);
+       }*/
 /*
         @Override
     public void onBackPressed() {
@@ -149,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
-
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
         mViewPager.setCurrentItem(tab.getPosition());
@@ -166,10 +185,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
-
     //fragmentstatePageAdapter manage fragments page
     public class MusicPagerAdapter extends FragmentStatePagerAdapter {
-        private SparseArray<Fragment> array = new SparseArray<>();
+        //     private SparseArray<Fragment> array = new SparseArray<>();
         public MusicPagerAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
         }
@@ -185,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .add(R.id.fragment_container, searchArtistByFragment)
                             .disallowAddToBackStack()
                             .commit();*/
-                    array.setValueAt(0, searchArtistByFragment);
+                    //   array.setValueAt(0, searchArtistByFragment);
                     return searchArtistByFragment;
                 }
                 case 1: {
@@ -194,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .replace(R.id.fragment_container, searchAlbumByArtistFragment)
                             .disallowAddToBackStack()
                             .commit();*/
-                    array.setValueAt(1, searchAlbumByArtistFragment);
+                    //  array.setValueAt(1, searchAlbumByArtistFragment);
                     return searchAlbumByArtistFragment;
                 }
                 case 2: {
@@ -203,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                             .replace(R.id.fragment_container, topTenLovedTracksByArtist)
                             .disallowAddToBackStack()
                             .commit();*/
-                    array.setValueAt(2, topTenLovedTracksByArtist);
+                    //    array.setValueAt(2, topTenLovedTracksByArtist);
                     return topTenLovedTracksByArtist;
                 }
 
@@ -232,9 +250,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             return "OBJECT " + (position + 1);
         }
 
-        public SparseArray<Fragment> getFragmentArray() {
+        /*public SparseArray<Fragment> getFragmentArray() {
             return array;
-        }
+        }*/
     }
 
     public class ZoomOutPageTransformer implements ViewPager.PageTransformer {

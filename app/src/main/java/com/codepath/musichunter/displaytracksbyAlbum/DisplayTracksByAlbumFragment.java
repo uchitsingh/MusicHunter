@@ -79,19 +79,12 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                /*
-                if(NetworkUtils.isNetworkConnected(getActivity())){
-                    displayTopRatedMovies();
-                }else{
-                    Toast.makeText(getActivity(), "no network availiable", Toast.LENGTH_SHORT).show();
-                    //AlertDialog ->builder pattern
-                }*/
+
                 callTrackViewBySearch();
             }
         });
 
-        // displayTopRatedMovies();
-      //  callService();
+
         callTrackViewBySearch();
 
     }
@@ -99,7 +92,6 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
     private void initAlbumArt_Description(){
         String albumDescription = getActivity().getIntent().getExtras().getString("albumDescription");
         m_Albums_AlbumDescription.setText(albumDescription);
-
 
         String albumsCdArt = getActivity().getIntent().getExtras().getString("albumartThumb");
         if (albumsCdArt != null && !albumsCdArt.isEmpty()) {
@@ -119,14 +111,6 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
     private void trackViewBySearch() {
         String albumId = getActivity().getIntent().getExtras().getString("albumId");
 
-      //  refreshLayout.setEnabled(true);
-/*        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                displayTracksByAlbumMvpPresenterIml.displayTracksbyAlbum(albumId);
-
-            }
-        });*/
         displayTracksByAlbumMvpPresenterIml.displayTracksbyAlbum(albumId);
     }
 
@@ -138,14 +122,17 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
                         if (isConnectedToInternet) {
+//                            Toast.makeText(getContext(), "Connected", Toast.LENGTH_SHORT).show();
 
-                            Toast.makeText(getContext(), "Connected", Toast.LENGTH_SHORT).show();
-                            //showMessage("Connection");
-                            //onError("Connection");
                             trackViewBySearch();
                         } else {
-                            Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                 //           Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                   //     Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -160,11 +147,11 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
     @Override
     public void onFetchDataSuccess(TracksModel tracksModel) {
         refreshLayout.setRefreshing(false);
-        m_rv_tracksDetails.setAdapter(new TracksAdapter(tracksModel));
+        if (tracksModel != null && tracksModel.getTrack().size() > 0) {
+            m_rv_tracksDetails.setAdapter(new TracksAdapter(tracksModel));
+        }
+
         hideLoading();
-
-
-
     }
 
     @Override

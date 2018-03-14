@@ -1,5 +1,7 @@
 package com.codepath.musichunter.searchalbumsbyartist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -34,8 +36,10 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SearchAlbumByArtistFragment extends BaseFragment implements ISearchAlbumByArtistMvpView {
 
-    @BindView(R.id.rv_AlbumsDetails) RecyclerView m_rv_AlbumsDetails;
-    @BindView(R.id.swiperefresh) SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.rv_AlbumsDetails)
+    RecyclerView m_rv_AlbumsDetails;
+    @BindView(R.id.swiperefresh)
+    SwipeRefreshLayout refreshLayout;
     private SearchAlbumByArtistPresenterImpl<SearchAlbumByArtistFragment> searchAlbumByArtistPresenter;
 
     public SearchAlbumByArtistFragment() {
@@ -48,6 +52,7 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         View view = inflater.inflate(R.layout.fragment_search_album_by_artist, null);
         searchAlbumByArtistPresenter = new SearchAlbumByArtistPresenterImpl<>(new AppDataManager(), new AppSchedulerProvider(), new CompositeDisposable());
         searchAlbumByArtistPresenter.onAttach(this);
+     //   callAlbumViewBySearchArtist();
         return view;
     }
 
@@ -55,16 +60,37 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRecycleView();
-        refreshLayout.setEnabled(false);
-    //  callAlbumViewBySearchArtist();
-      /*  CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
-        MainActivity.getM_Sv_Artist().setQuery(searchView, true);*/
 
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                searchAlbumByArtistPresenter.loadAlbumByArtistInformation(getString(R.string.default_artist));
+            }
+        });
+
+        searchAlbumByArtistPresenter.loadAlbumByArtistInformation(getString(R.string.default_artist));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callAlbumViewBySearchArtist();
+            }
+        });
+
+         callAlbumViewBySearchArtist();
     }
 
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+          callAlbumViewBySearchArtist();
+        }
+    }
+
     public void initRecycleView() {
-        m_rv_AlbumsDetails.setLayoutManager(new GridLayoutManager(getActivity(),3));
+        m_rv_AlbumsDetails.setLayoutManager(new GridLayoutManager(getActivity(), 3));
     }
 
 
@@ -75,15 +101,18 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
+                                if (isConnectedToInternet) {
+                                    albumViewBySearchArtist();
+                                } else {
+                                  //  Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                                }
 
-                            Toast.makeText(getContext(), "Connected", Toast.LENGTH_SHORT).show();
-                            //showMessage("Connection");
-                            //onError("Connection");
-                            albumViewBySearchArtist();
-                        } else {
-                            Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
                         }
+
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                      //  Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -94,10 +123,29 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
         Log.i("AlbumSearchView", "AlbumSearchView");
 
-        MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, "santana");
+        searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+
+        SharedPreferences.OnSharedPreferenceChangeListener listener  =
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                        // listener implementation
+                        if (key.equals(MainActivity.searchView_Name)){
+                            String searchValue = prefs.getString(key, MainActivity.getM_Sv_Artist().getQuery().toString());
+                            searchAlbumByArtistPresenter.loadAlbumByArtistInformation(searchValue);
+
+                        }
+                    }
+                };
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+
+   /*     MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                refreshLayout.setEnabled(true);
+             //   refreshLayout.setEnabled(true);
                 refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
@@ -108,22 +156,16 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
                 return true;
             }
+
             @Override
             public boolean onQueryTextChange(String s) {
                 return false;
             }
-        });
+        });*/
 
-    }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser)
-        {
-            callAlbumViewBySearchArtist();
-        }
+
     }
 
 
@@ -135,10 +177,12 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
     @Override
     public void onFetchDataSuccess(AlbumsModel albumsModel) {
-        refreshLayout.setRefreshing(false);
-        m_rv_AlbumsDetails.setAdapter(new AlbumAdapter(albumsModel));
-        hideLoading();
 
+        if (albumsModel.getAlbum().size() > 0) {
+            refreshLayout.setRefreshing(false);
+            m_rv_AlbumsDetails.setAdapter(new AlbumAdapter(albumsModel));
+            hideLoading();
+        }
     }
 
     @Override
@@ -147,7 +191,6 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         showMessage(error);
         hideLoading();
     }
-
 
 
     @Override
@@ -166,9 +209,10 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
             CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
             MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
 
-
         }
     }
+
+
 
     /*public void rxAlbumViewBySearch() {
         m_Sv_Artist = MainActivity.getM_Sv_Artist();

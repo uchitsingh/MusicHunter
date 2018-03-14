@@ -1,6 +1,8 @@
 package com.codepath.musichunter.searchtoptenlovedtracksbyArtist;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import com.codepath.musichunter.model.data.network.AppDataManager;
 import com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist.TopTenLovedTracksByArtistModel;
 
 import com.codepath.musichunter.model.data.network.service.ServiceConnection;
+import com.codepath.musichunter.searchalbumsbyartist.AlbumAdapter;
 import com.codepath.musichunter.ui.base.BaseFragment;
 import com.codepath.musichunter.ui.utils.rx.AppSchedulerProvider;
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
@@ -42,8 +45,10 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISearchTopTenLovedTracksByArtistMvpView {
 
-    @BindView(R.id.rv_Top_Ten_Loved_Tracks) RecyclerView m_rv_Top_Ten_Loved_Tracks;
-    @BindView(R.id.swiperefresh)  SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.rv_Top_Ten_Loved_Tracks)
+    RecyclerView m_rv_Top_Ten_Loved_Tracks;
+    @BindView(R.id.swiperefresh)
+    SwipeRefreshLayout refreshLayout;
     private SearchTopTenLovedTracksByArtistMvpPresenterIml<SearchTopTenLovedTracksByArtist> searchTopTenLovedTracksByArtistMvpPresenterIml;
 
     public SearchTopTenLovedTracksByArtist() {
@@ -56,8 +61,8 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_top_ten_loved_tracks_by_artist, null);
-     //   setRetainInstance(true);
-
+        //   setRetainInstance(true);
+        // callTopTenLovedTracksViewByArtist();
         searchTopTenLovedTracksByArtistMvpPresenterIml = new SearchTopTenLovedTracksByArtistMvpPresenterIml<>(new AppDataManager(), new AppSchedulerProvider(), new CompositeDisposable());
         searchTopTenLovedTracksByArtistMvpPresenterIml.onAttach(this);
         return view;
@@ -66,70 +71,24 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
- //       iRequestInterface = ServiceConnection.getConnection();
         initRecycleView();
-        refreshLayout.setEnabled(false);
 
-        /*CharSequence searchView = MainActivity.getM_Sv_Artist().getQuery();
-        MainActivity.getM_Sv_Artist().setQuery(searchView, true);*/
-  //     topTenLovedTracksViewByArtist();
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(getString(R.string.default_artist));
+            }
+        });
+        searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(getString(R.string.default_artist));
+        callTopTenLovedTracksViewByArtist();
 
-       // rxTopTenViewBySearch();
-    }
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                callTopTenLovedTracksViewByArtist();
+            }
+        });
 
-
-
-    private void initRecycleView() {
-      //  m_rv_Top_Ten_Loved_Tracks = (RecyclerView) getActivity().findViewById(R.id.rv_Top_Ten_Loved_Tracks);
-        m_rv_Top_Ten_Loved_Tracks.setLayoutManager(new LinearLayoutManager(getActivity()));
-    }
-
-    private void topTenLovedTracksViewByArtist() {
-        Log.i("1010", "1010");
-
-            MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String s) {
-                    refreshLayout.setEnabled(true);
-                    refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                        @Override
-                        public void onRefresh() {
-                            searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(s);
-
-                        }
-                    });
-
-                    searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(s);
-
-                    return true;
-
-                }
-
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    return false;
-                }
-            });
-        }
-    private void callTopTenLovedTracksViewByArtist() {
-        ReactiveNetwork.observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(Boolean isConnectedToInternet) throws Exception {
-                        if (isConnectedToInternet) {
-
-                            Toast.makeText(getContext(), "Connected", Toast.LENGTH_SHORT).show();
-                            //showMessage("Connection");
-                            //onError("Connection");
-                            topTenLovedTracksViewByArtist();
-                        } else {
-                            Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
 
     }
 
@@ -137,16 +96,114 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser)
-        {
-            callTopTenLovedTracksViewByArtist();
+        if (isVisibleToUser) {
+              callTopTenLovedTracksViewByArtist();
 
-       //    topTenLovedTracksViewByArtist();
-          //  rxTopTenViewBySearch();
         }
     }
 
 
+    private void initRecycleView() {
+        //  m_rv_Top_Ten_Loved_Tracks = (RecyclerView) getActivity().findViewById(R.id.rv_Top_Ten_Loved_Tracks);
+        m_rv_Top_Ten_Loved_Tracks.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
+
+    private void topTenLovedTracksViewByArtist() {
+        Log.i("1010", "1010");
+
+
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String  searchValue = sharedPreferences.getString(MainActivity.searchView_Name, "santana");
+        searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+
+
+        SharedPreferences.OnSharedPreferenceChangeListener listener  =
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                        // listener implementation
+                        if (key.equals(MainActivity.searchView_Name)){
+                            String searchValue = prefs.getString(key, MainActivity.getM_Sv_Artist().getQuery().toString());
+                            searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(searchValue);
+
+                        }
+                    }
+                };
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+
+     /*   MainActivity.getM_Sv_Artist().setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                //   refreshLayout.setEnabled(true);
+                refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(s);
+
+                    }
+                });
+                searchTopTenLovedTracksByArtistMvpPresenterIml.loadTopTenByArtistInformation(s);
+
+                return true;
+
+            }
+
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });*/
+    }
+
+    private void callTopTenLovedTracksViewByArtist() {
+        ReactiveNetwork.observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                         if (isConnectedToInternet) {
+                                topTenLovedTracksViewByArtist();
+                            } else {
+                              //  Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                            }
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                       // Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+
+
+
+    @Override
+    public void onFetchDataProgress() {
+        showLoading();
+    }
+
+    @Override
+    public void onFetchDataSuccess(TopTenLovedTracksByArtistModel topTenLovedTracksByArtistModel) {
+
+        if ( topTenLovedTracksByArtistModel.getTrack().size() > 0) {
+                refreshLayout.setRefreshing(false);
+                m_rv_Top_Ten_Loved_Tracks.setAdapter(new TopTenLovedTracksAdapter(topTenLovedTracksByArtistModel));
+                hideLoading();
+        }
+    }
+
+    @Override
+    public void onFetchDataError(String error) {
+        refreshLayout.setRefreshing(false);
+        showMessage(error);
+        hideLoading();
+
+    }
 
 
     @Override
@@ -162,35 +219,12 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState!=null){
+        if (savedInstanceState != null) {
             //    Log.i("onSaveInstanceStateSArt", "onSaveInstanceState_SearchArti");
             CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
             MainActivity.getM_Sv_Artist().setQuery(searchViewQuery, true);
         }
     }
-
-    @Override
-    public void onFetchDataProgress() {
-        showLoading();
-    }
-
-    @Override
-    public void onFetchDataSuccess(TopTenLovedTracksByArtistModel topTenLovedTracksByArtistModel) {
-        refreshLayout.setRefreshing(false);
-        m_rv_Top_Ten_Loved_Tracks.setAdapter(new TopTenLovedTracksAdapter(topTenLovedTracksByArtistModel));
-        hideLoading();
-    }
-
-    @Override
-    public void onFetchDataError(String error) {
-        refreshLayout.setRefreshing(false);
-        showMessage(error);
-        hideLoading();
-
-    }
-
-
-
 
 
 /*    public void rxTopTenViewBySearch(){
