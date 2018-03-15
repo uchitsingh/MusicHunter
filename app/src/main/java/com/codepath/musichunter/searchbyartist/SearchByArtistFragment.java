@@ -25,7 +25,10 @@ import android.widget.Toast;
 
 import com.codepath.musichunter.MainActivity;
 import com.codepath.musichunter.R;
+import com.codepath.musichunter.controller.RealmBackupRestore;
+import com.codepath.musichunter.controller.RealmHelper;
 import com.codepath.musichunter.model.data.network.AppDataManager;
+import com.codepath.musichunter.model.data.network.model.searchbyartist.Artist;
 import com.codepath.musichunter.model.data.network.model.searchbyartist.ArtistModel;
 import com.codepath.musichunter.model.data.network.service.IRequestInterface;
 import com.codepath.musichunter.model.data.network.service.ServiceConnection;
@@ -39,6 +42,8 @@ import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -51,15 +56,17 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. This Fragment is used to Search for Artist details.
  */
 public class SearchByArtistFragment extends BaseFragment implements ISearchByArtistMvpView  {
 
     @BindView(R.id.cv_ArtistDetails)
     CardView m_Cv_ArtistDetails;
+
     @BindView(R.id.tv_ArtistBiography)
     TextView m_ArtistBio;
     @BindView(R.id.tv_ArtistGenre)
@@ -80,9 +87,15 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     //  TextView m_NotFound;
     @BindView(R.id.iv_ArtistImageCleanArt)
     ImageView m_ArtistImageClearArt;
+
     @BindView(R.id.swiperefresh)
     SwipeRefreshLayout refreshLayout;
     private SearchByArtistPresenterIml<SearchByArtistFragment> searchByArtistPresenterIml;
+    private Realm realm;
+    private RealmHelper realmHelper;
+    private RealmBackupRestore realmBackupRestore;
+    private ArrayList<Artist> artistModelArrayList;
+
     public SearchByArtistFragment() {
         // Required empty public constructor
     }
@@ -102,6 +115,8 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initRealm();
+
 /*        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -119,8 +134,31 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
 
 
         callArtistViewBySearch();*/
+        realmBackupRestore = new RealmBackupRestore(getActivity());
+    }
+
+    private void initRealm() {
+        realm = realm.getDefaultInstance();
+        realmHelper = new RealmHelper(realm);
 
     }
+
+    public void saveDataToRealm(String artistBio, String artistGenre, String artistStyle, String artistMood
+            , String artistLabel, String artistCountry, String formedYear, String diedYear,  String artistImageLogo, String artistImageClearArt)
+        {
+
+        Artist artist = new Artist(artistBio, artistGenre,artistStyle
+                , artistMood, artistLabel, artistCountry, formedYear, diedYear, artistImageLogo, artistImageClearArt);
+        realmHelper.saveArtists(artist);
+        realmBackupRestore.backup();
+    }
+
+    /**
+     * Method used to check that the user is on SearchByArtistFragment Fragment instance before making call to load data from API.
+     * Without this, resources were not being properly allocated, across viewpager and Fragments.
+     * @param isVisibleToUser Ensures that the correct fragment instance is used before loading data from API
+     *
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -129,6 +167,11 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
         }
     }
 
+
+    /**
+     * This method is used to check if there is an internet connection using RxReactiveNetwork, which allows it to check for the Network State on a
+     * seperate background thread. If there is an internet connection, search for the artist and load their details.
+     */
     public void callArtistViewBySearch() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
@@ -140,6 +183,13 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
                                 artistViewBySearch();
                             } else {
                              //   Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                              //  Artist artist = (Artist) realmHelper.getArtists().get(0);
+
+                              //  artistModelArrayList =
+                              // int position = realmHelper.getArtists().size()-1;
+
+                               populateViews(realmHelper.getArtists());
+                                artistViewBySearch();
                             }
                     }
                 }, new Consumer<Throwable>() {
@@ -152,6 +202,12 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     }
 
 
+    /**
+     * This method makes the main call to Artist Api.
+     * This method gets the SharedPreference which is saved when a query to static SearchView is updated, and loads the artist detail information according to the value(artist_Name) contained in sharedPreferencce.
+     * We also register  the sharedPreferences with OnSharedPreferenceChangeListener, so whenever the preference value is changed, the artist details are updated
+     * accordingly.
+     */
     public void artistViewBySearch() {
         Log.i("artistSearch", "artistSearchView");
 
@@ -212,29 +268,32 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
     }
 
 
-
-    public void populateViews(ArtistModel artistModel) {
-        if (artistModel != null && artistModel.getArtists().size() > 0) {
+    /**
+     * This method is used to populate views with related artistModel details
+     * @param artistModel The Artist Model will be supplied when the data is fetched successfully from APl
+     */
+    public void populateViews(List<Artist> artistModel) {
+        if (artistModel != null && artistModel.size() > 0) {
             m_Cv_ArtistDetails.setVisibility(View.VISIBLE);
             //     m_NotFound.setVisibility(View.INVISIBLE);
             //        m_ArtistName.setText(artistModel.getArtists().get(0).getStrArtist());
-            m_ArtistBio.setText(artistModel.getArtists().get(0).getStrBiographyEN());
-            m_ArtistGenre.setText(artistModel.getArtists().get(0).getStrGenre());
-            m_ArtistStyle.setText(artistModel.getArtists().get(0).getStrStyle());
-            m_ArtistMood.setText(artistModel.getArtists().get(0).getStrMood());
+            m_ArtistBio.setText(artistModel.get(0).getStrBiographyEN());
+            m_ArtistGenre.setText(artistModel.get(0).getStrGenre());
+            m_ArtistStyle.setText(artistModel.get(0).getStrStyle());
+            m_ArtistMood.setText(artistModel.get(0).getStrMood());
 
-            String artist_Label = artistModel.getArtists().get(0).getStrLabel();
+            String artist_Label = artistModel.get(0).getStrLabel();
             if (artist_Label != null) {
-                m_ArtistLabel.setText(artistModel.getArtists().get(0).getStrLabel());
+                m_ArtistLabel.setText(artistModel.get(0).getStrLabel());
             } else {
                 m_ArtistLabel.setText("N/A");
             }
 
-            m_ArtistCountry.setText(artistModel.getArtists().get(0).getStrCountry());
+            m_ArtistCountry.setText(artistModel.get(0).getStrCountry());
 
-            String formedYear = artistModel.getArtists().get(0).getIntFormedYear();
+            String formedYear = artistModel.get(0).getIntFormedYear();
 
-            String diedYear = (String) artistModel.getArtists().get(0).getIntDiedYear();
+            String diedYear = (String) artistModel.get(0).getIntDiedYear();
 
             if (formedYear != null && diedYear != null) {
                 m_ArtistTimeline.setText(String.valueOf(formedYear + " - " + diedYear));
@@ -246,13 +305,13 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
 
             //    int disbandedYear = Integer.parseInt(artistModel.getArtists().get(0).getIntFormedYear());
 
-            Picasso.with(getContext()).load(artistModel.getArtists().get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
+            Picasso.with(getContext()).load(artistModel.get(0).getStrArtistLogo()).into(m_ArtistImageLogo);
 
 
-            String artistImageClearArt = artistModel.getArtists().get(0).getStrArtistClearart();
+            String artistImageClearArt = artistModel.get(0).getStrArtistClearart();
 
             if (artistImageClearArt == null) {
-                artistImageClearArt = artistModel.getArtists().get(0).getStrArtistFanart();
+                artistImageClearArt = artistModel.get(0).getStrArtistFanart();
 
             }
             Picasso.with(getContext()).load(artistImageClearArt).into(m_ArtistImageClearArt);
@@ -268,13 +327,33 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
 
     }
 
+    /**
+     * if the data was successfully fetched, popuplate views with artistModel
+     * @param artistModel the artistModel fetched from API is passed to the custom adapter
+     */
     @Override
     public void onFetchDataSuccess(ArtistModel artistModel) {
 
         if ( artistModel.getArtists().size() > 0) {
             refreshLayout.setRefreshing(false);
-            populateViews(artistModel);
+            populateViews(artistModel.getArtists());
             hideLoading();
+           // if(artistModel.getArtists().get(0).getStrArtist() )
+
+
+            realm.deleteAll();
+            saveDataToRealm(artistModel.getArtists().get(0).getStrBiographyEN(),
+                    artistModel.getArtists().get(0).getStrGenre(),
+                    artistModel.getArtists().get(0).getStrStyle(),
+                    artistModel.getArtists().get(0).getStrMood(),
+                    artistModel.getArtists().get(0).getStrLabel(),
+                    artistModel.getArtists().get(0).getStrCountry(),
+                    artistModel.getArtists().get(0).getIntFormedYear(),
+                    artistModel.getArtists().get(0).getIntDiedYear().toString(),
+                    artistModel.getArtists().get(0).getStrArtistLogo(),
+                    artistModel.getArtists().get(0).getStrArtistClearart()
+                    );
+
         }
     }
 

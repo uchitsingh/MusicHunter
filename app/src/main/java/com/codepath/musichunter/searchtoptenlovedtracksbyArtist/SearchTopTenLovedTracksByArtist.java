@@ -41,7 +41,7 @@ import io.reactivex.schedulers.Schedulers;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. Fragment used to search for Top 10 track by Artist.
  */
 public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISearchTopTenLovedTracksByArtistMvpView {
 
@@ -92,7 +92,12 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
 
         callTopTenLovedTracksViewByArtist();*/
     }
-
+    /**
+     * Method used to check that the user is on SearchTopTenLovedTracksByArtist Fragment instance before making call to load data from API.
+     * Without this, resources were not being properly allocated, across viewpager and Fragments.
+     * @param isVisibleToUser Ensures that the correct fragment instance is used before loading data from API
+     *
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -103,12 +108,46 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
         }
     }
 
-
+    /**
+     * Method to initialize our recyclerView.
+     */
     private void initRecycleView() {
         //  m_rv_Top_Ten_Loved_Tracks = (RecyclerView) getActivity().findViewById(R.id.rv_Top_Ten_Loved_Tracks);
         m_rv_Top_Ten_Loved_Tracks.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
+    /**
+     * Method is used to check if there is an internet connection using RxReactiveNetwork, which allows it to check for the Network State on a
+     * seperate background thread. If there is an internet connection, display TopTenLovedTracks details.
+     */
+    private void callTopTenLovedTracksViewByArtist() {
+        ReactiveNetwork.observeInternetConnectivity()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean isConnectedToInternet) throws Exception {
+                        if (isConnectedToInternet) {
+                            topTenLovedTracksViewByArtist();
+                        } else {
+                            //  Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
+                        }
 
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        // Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    /**
+     * This method makes the main call to Album Api.
+     * This method gets the SharedPreference which is saved when a query to static SearchView is updated, and loads the album detail information according to the value(artist_Name) contained in sharedPreferencce.
+     * We also register  the sharedPreferences with OnSharedPreferenceChangeListener, so whenever the preference value is changed, the topTenLovedTracks details are updated
+     * accordingly.
+     */
     private void topTenLovedTracksViewByArtist() {
         Log.i("1010", "1010");
 
@@ -172,28 +211,6 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
         });*/
     }
 
-    private void callTopTenLovedTracksViewByArtist() {
-        ReactiveNetwork.observeInternetConnectivity()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(Boolean isConnectedToInternet) throws Exception {
-                         if (isConnectedToInternet) {
-                                topTenLovedTracksViewByArtist();
-                            } else {
-                              //  Toast.makeText(getContext(), "No Connection", Toast.LENGTH_SHORT).show();
-                            }
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                       // Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-    }
 
 
 
@@ -203,6 +220,11 @@ public class SearchTopTenLovedTracksByArtist extends BaseFragment implements ISe
         showLoading();
     }
 
+
+    /**
+     * if the data was successfully fetched, setup the recycler view with the adapter.
+     * @param topTenLovedTracksByArtistModel the topTenLovedTracksByArtistModel returned from API is passed to the custom adapter
+     */
     @Override
     public void onFetchDataSuccess(TopTenLovedTracksByArtistModel topTenLovedTracksByArtistModel) {
 

@@ -1,0 +1,16 @@
+com.codepath.musichunter
+com.codepath.musichunter.displaylyricsbyartistandtitle
+com.codepath.musichunter.displaytracksbyAlbum
+com.codepath.musichunter.model.data.network
+com.codepath.musichunter.model.data.network.model.displaylyricsbyartistandtitle
+com.codepath.musichunter.model.data.network.model.displaytracksbyalbum
+com.codepath.musichunter.model.data.network.model.searchbyartist
+com.codepath.musichunter.model.data.network.model.searchtoptenlovedtracksbyArtist
+com.codepath.musichunter.model.data.network.model.searhalbumsbyartist
+com.codepath.musichunter.model.data.network.service
+com.codepath.musichunter.searchalbumsbyartist
+com.codepath.musichunter.searchbyartist
+com.codepath.musichunter.searchtoptenlovedtracksbyArtist
+com.codepath.musichunter.ui.base
+com.codepath.musichunter.ui.utils
+com.codepath.musichunter.ui.utils.rx

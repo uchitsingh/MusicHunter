@@ -23,6 +23,10 @@ import com.codepath.musichunter.searchalbumsbyartist.SearchAlbumByArtistFragment
 import com.codepath.musichunter.searchbyartist.SearchByArtistFragment;
 import com.codepath.musichunter.searchtoptenlovedtracksbyArtist.SearchTopTenLovedTracksByArtist;
 
+/**
+ * Applications Main Entry Point and default Activity. It sets up the ViewPager with ActionBar, and a static Searchview to
+ * switch and search  between {@link SearchByArtistFragment}, {@link SearchAlbumByArtistFragment}, {@link SearchTopTenLovedTracksByArtist} fragements for music related information based on Artist Name.
+ */
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
     public static FragmentManager fragmentManager;
     private ViewPager mViewPager;
@@ -35,6 +39,11 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
     public static final String searchView_Name = "searchViewKey";
 
+    /**
+     * SearchView is registered to setOnQueryTextListener, so that if there is change in its query, then save it to sharedPreferences.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
+    /**
+     * Initialize our ViewPager, attaching the adapter and setting up a listener for when the
+      user swipes between tabs
+     */
     public void initViewPager() {
 //        musicPagerAdapter = new MusicPagerAdapter(getSupportFragmentManager());
         musicPagerAdapter = new MusicPagerAdapter(fragmentManager);
@@ -99,10 +112,6 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
 
-
-        //  actionBar.setupWithViewPager(this.mViewPager);
-
-
         // Add 3 tabs, specifying the tab's text and TabListener
         for (int i = 0; i < musicPagerAdapter.getCount(); i++) {
             actionBar.addTab(
@@ -112,7 +121,17 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             );
         }
 
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                // When swiping between different app sections, select the corresponding tab.
+                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
+                // Tab.
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
 
+        actionBar.setSelectedNavigationItem(1);
     /*    mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -133,41 +152,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
          // actionBar.getTabAt(1).select();
 
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                // When swiping between different app sections, select the corresponding tab.
-                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
-                // Tab.
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
 
-        actionBar.setSelectedNavigationItem(1);
     }
 
-    /*   @Override
-       protected void onSaveInstanceState(Bundle outState) {
-           super.onSaveInstanceState(outState);
 
-       }
-
-       @Override
-       protected void onRestoreInstanceState(Bundle savedInstanceState) {
-           super.onRestoreInstanceState(savedInstanceState);
-       }*/
-/*
-        @Override
-    public void onBackPressed() {
-        if (mViewPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
-            super.onBackPressed();
-        } else {
-            // Otherwise, select the previous step.
-            mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
-        }
-    }*/
     @Override
     protected void onStop() {
         super.onStop();
@@ -179,6 +167,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
+    /**
+     * @param tab Use this to get the tab position, and set the current Item of ViewPager accordingly
+     *
+     */
     @Override
     public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
         mViewPager.setCurrentItem(tab.getPosition());
@@ -195,9 +187,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
 
-    //fragmentstatePageAdapter manage fragments page
+    /**
+     *   MusicPagerAdapter is used to manage fragments page
+     */
     public class MusicPagerAdapter extends FragmentStatePagerAdapter {
-        //     private SparseArray<Fragment> array = new SparseArray<>();
         public MusicPagerAdapter(FragmentManager supportFragmentManager) {
             super(supportFragmentManager);
         }
@@ -209,36 +202,20 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             switch (position) {
                 case 0: {
                     Fragment searchArtistByFragment = new SearchByArtistFragment();
-           /*         fragmentManager.beginTransaction()
-                            .add(R.id.fragment_container, searchArtistByFragment)
-                            .disallowAddToBackStack()
-                            .commit();*/
-                    //   array.setValueAt(0, searchArtistByFragment);
                     return searchArtistByFragment;
                 }
                 case 1: {
                     Fragment searchAlbumByArtistFragment = new SearchAlbumByArtistFragment();
-              /*      fragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, searchAlbumByArtistFragment)
-                            .disallowAddToBackStack()
-                            .commit();*/
-                    //  array.setValueAt(1, searchAlbumByArtistFragment);
                     return searchAlbumByArtistFragment;
                 }
                 case 2: {
                     Fragment topTenLovedTracksByArtist = new SearchTopTenLovedTracksByArtist();
-         /*           fragmentManager.beginTransaction()
-                            .replace(R.id.fragment_container, topTenLovedTracksByArtist)
-                            .disallowAddToBackStack()
-                            .commit();*/
-                    //    array.setValueAt(2, topTenLovedTracksByArtist);
                     return topTenLovedTracksByArtist;
                 }
 
                 default:
                     throw new RuntimeException("Invalid Count for pager adapter");
             }
-
 
         }
 
@@ -260,11 +237,11 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             return "OBJECT " + (position + 1);
         }
 
-        /*public SparseArray<Fragment> getFragmentArray() {
-            return array;
-        }*/
     }
 
+    /**
+     * This class is used to add animations to viewpager when switching between fragements.
+     */
     public class ZoomOutPageTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.85f;
         private static final float MIN_ALPHA = 0.5f;
@@ -304,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         }
     }
 
-
+/*
     public class DepthPageTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.75f;
 
@@ -340,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
                 view.setAlpha(0);
             }
         }
-    }
+    }*/
 
 /*    @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -359,6 +336,20 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         CharSequence searchViewQuery = (CharSequence) savedInstanceState.get("savedSearchViewQuery");
          m_Sv_Artist.setQuery(searchViewQuery, true);
 
+    }*/
+
+
+/*
+        @Override
+    public void onBackPressed() {
+        if (mViewPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
+        }
     }*/
 
 }

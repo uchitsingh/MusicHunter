@@ -37,7 +37,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. The default Fragment of the {@link DisplayTracksByAlbumActivity}, used to display a specific album details, and the tracks contained in the album.
  */
 public class DisplayTracksByAlbumFragment extends BaseFragment implements IDisplayTracksByAlbumMvpView {
 
@@ -89,6 +89,10 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
 
     }
 
+    /**
+     * This method is used to setup views with the  album description , and an image that was passed from {@link com.codepath.musichunter.searchalbumsbyartist.AlbumAdapter}
+     * when starting the Intent for {@link DisplayTracksByAlbumActivity}
+     */
     private void initAlbumArt_Description(){
         String albumDescription = getActivity().getIntent().getExtras().getString("albumDescription");
         m_Albums_AlbumDescription.setText(albumDescription);
@@ -103,17 +107,27 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
         }
     }
 
+    /**
+     * Initializes recycler view
+     */
     private void initRecycleView() {
 
         m_rv_tracksDetails.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    /**
+     * Methods get an albumId that was passed when starting the {@link DisplayTracksByAlbumActivity} via intent.
+     * This albumId is then used to display tracks of that particualar album clicked from the recycler view of the {@link com.codepath.musichunter.searchalbumsbyartist.SearchAlbumByArtistFragment}
+     */
     private void trackViewBySearch() {
         String albumId = getActivity().getIntent().getExtras().getString("albumId");
 
         displayTracksByAlbumMvpPresenterIml.displayTracksbyAlbum(albumId);
     }
 
+    /**
+     * Checks if there is internet or not. If there is we can make request to API to load the tracksDetails.
+     */
     private void callTrackViewBySearch() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
@@ -144,6 +158,9 @@ public class DisplayTracksByAlbumFragment extends BaseFragment implements IDispl
         showLoading();
     }
 
+    /**
+     * @param tracksModel the tracksModel returned from the API , that is passed to the customAdapter of our recycler view.
+     */
     @Override
     public void onFetchDataSuccess(TracksModel tracksModel) {
         refreshLayout.setRefreshing(false);

@@ -31,7 +31,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. This fragment is replaced when the user is on the {@link com.codepath.musichunter.displaytracksbyAlbum.DisplayTracksByAlbumFragment}, and
+ * click on a particular track displayed inside its recyclerView.
  */
 public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyricsByTrackMvpView {
 
@@ -72,6 +73,10 @@ public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyri
 
     }
 
+    /**
+     * Method used to access the arguements supplied when this fragment was instantiated, and pass it as parameters to correctly display spepcific track list
+     *
+     */
     public void displayLyricsDetails() {
 
         String artist_Name = getArguments().getString("artist_name");
@@ -80,6 +85,9 @@ public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyri
         displayLyricsByTrackMvpPresenterIml.displayLyricsByTrack(artist_Name, song_Title);
     }
 
+    /**
+     * Method to check if there is connection to an Internet. When connected, display lyrics , else not.
+     */
     private void callDisplayLyricsDetailsh() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
@@ -109,6 +117,9 @@ public class DisplayLyricsFragement extends BaseFragment implements IDisplayLyri
 
     }
 
+    /**
+     * @param lyricModel the model feteched from the API that is used to set up an textview with the lyrics
+     */
     @Override
     public void onFetchDataSuccess(LyricModel lyricModel) {
         refreshLayout.setRefreshing(false);

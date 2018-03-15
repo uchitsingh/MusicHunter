@@ -3,7 +3,7 @@ package com.codepath.musichunter;
 import android.view.View;
 
 /**
- * Created by uchit on 07/03/2018.
+ * This interface is implemented when a user needs a click event listener. .
  */
 
 public interface ItemClickListener {

@@ -3,12 +3,17 @@ package com.codepath.musichunter.model.data.network.model.searchbyartist;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+
 /**
  * Created by uchit on 04/03/2018.
  */
 
 
-public class Artist {
+public class Artist extends RealmObject{
 
     @SerializedName("idArtist")
     @Expose
@@ -17,7 +22,7 @@ public class Artist {
     @Expose
     private String strArtist;
     @SerializedName("strArtistStripped")
-    @Expose
+    @Ignore
     private Object strArtistStripped;
     @SerializedName("strArtistAlternate")
     @Expose
@@ -32,13 +37,13 @@ public class Artist {
     @Expose
     private String intFormedYear;
     @SerializedName("intBornYear")
-    @Expose
+    @Ignore
     private Object intBornYear;
     @SerializedName("intDiedYear")
-    @Expose
+    @Ignore
     private Object intDiedYear;
     @SerializedName("strDisbanded")
-    @Expose
+    @Ignore
     private Object strDisbanded;
     @SerializedName("strStyle")
     @Expose
@@ -148,6 +153,22 @@ public class Artist {
     @SerializedName("strLocked")
     @Expose
     private String strLocked;
+
+    public Artist() {
+    }
+
+    public Artist(String artistBio, String artistGenre, String artistStyle, String artistMood, String artistLabel, String artistCountry, String formedYear, String intDiedYear, String artistImageLogo, String artistImageClearArt) {
+        this.strBiographyEN = artistBio;
+        this.strGenre = artistGenre;
+        this.strStyle = artistStyle;
+        this.strMood = artistMood;
+        this.strLabel = artistLabel;
+        this.strCountry = artistCountry;
+        this.intFormedYear = formedYear;
+        this.intDiedYear = intDiedYear;
+        this.strArtistLogo = artistImageLogo;
+        this.strArtistClearart =artistImageClearArt;
+    }
 
     public String getIdArtist() {
         return idArtist;

@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} subclass. This Fragment is used to Search for Album details of a particular Artist.
  */
 public class SearchAlbumByArtistFragment extends BaseFragment implements ISearchAlbumByArtistMvpView {
 
@@ -82,7 +82,12 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
          callAlbumViewBySearchArtist();*/
     }
 
-
+    /**
+     * Method used to check that the user is on SearchAlbumByArtistFragment Fragment instance before making call to load data from API.
+     * Without this, resources were not being properly allocated, across viewpager and Fragments.
+     * @param isVisibleToUser Ensures that the correct fragment instance is used before loading data from API
+     *
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -92,11 +97,18 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
         }
     }
 
+    /**
+     * Method to initialize our recyclerView.
+     */
     public void initRecycleView() {
         m_rv_AlbumsDetails.setLayoutManager(new GridLayoutManager(getActivity(), 3));
     }
 
 
+    /**
+     * This method is used to check if there is an internet connection using RxReactiveNetwork, which allows it to check for the Network State on a
+     * seperate background thread. If there is an internet connection, search for the album details.
+     */
     private void callAlbumViewBySearchArtist() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
@@ -121,7 +133,12 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
     }
 
-
+    /**
+     * This method makes the main call to Album Api.
+     * This method gets the SharedPreference which is saved when a query to static SearchView is updated, and loads the album detail information according to the value(artist_Name) contained in sharedPreferencce.
+     * We also register  the sharedPreferences with OnSharedPreferenceChangeListener, so whenever the preference value is changed, the album details are updated
+     * accordingly.
+     */
     public void albumViewBySearchArtist() {
 
         Log.i("AlbumSearchView", "AlbumSearchView");
@@ -193,6 +210,10 @@ public class SearchAlbumByArtistFragment extends BaseFragment implements ISearch
 
     }
 
+    /**
+     * if the data was successfully fetched, setup the recycler view with the adapter.
+     * @param albumsModel the albumsModel returned from API is passed to the custom adapter
+     */
     @Override
     public void onFetchDataSuccess(AlbumsModel albumsModel) {
 
