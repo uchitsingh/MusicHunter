@@ -314,7 +314,10 @@ public class SearchByArtistFragment extends BaseFragment implements ISearchByArt
                 artistImageClearArt = artistModel.get(0).getStrArtistFanart();
 
             }
-            Picasso.with(getContext()).load(artistImageClearArt).into(m_ArtistImageClearArt);
+            Picasso.with(getContext()).load(artistImageClearArt)
+                 /*   .resize(5000,5000)
+                    .centerCrop()*/
+                    .into(m_ArtistImageClearArt);
         } else {
 
         }

@@ -45,7 +45,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                     .resize(500, 500)
                     .centerCrop()
                     .into(holder.m_iv_albumArt);
-
+            holder.m_AlbumName.setVisibility(View.GONE);
         } else {
             Picasso.with(MyApp.getInstance().getAppContext()).load("http://saveabandonedbabies.org/wp-content/uploads/2015/08/default.png")
                     .resize(500, 500)
@@ -65,10 +65,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
                 String albumartThumb = albumsModel.getAlbum().get(position).getStrAlbumThumbBack();
                 Intent intent = new Intent(MyApp.getInstance().getAppContext(), DisplayTracksByAlbumActivity.class);
-                if (albumartThumb != null && !albumArt.isEmpty()) {
+                if (albumartThumb != null && !albumartThumb.isEmpty()) {
                     intent.putExtra("albumartThumb", albumartThumb);
                 } else {
-
+                    intent.putExtra("albumartThumb", albumArt);
                 }
                 intent.putExtra("albumId", albumId);
                 intent.putExtra("albumDescription", albumDescription);

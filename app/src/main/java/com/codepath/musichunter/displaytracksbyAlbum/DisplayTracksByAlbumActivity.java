@@ -1,10 +1,15 @@
 package com.codepath.musichunter.displaytracksbyAlbum;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.codepath.musichunter.R;
 import com.codepath.musichunter.displaylyricsbyartistandtitle.DisplayLyricsFragement;
@@ -16,6 +21,8 @@ import com.codepath.musichunter.displaylyricsbyartistandtitle.DisplayLyricsFrage
  */
 public class DisplayTracksByAlbumActivity extends AppCompatActivity {
     private static FragmentManager fragmentManager;
+    private TextView textview;
+    private RelativeLayout.LayoutParams layoutparams;
 
     /**
      * Initializes fragmentManager, and adds the default Fragment, {@link DisplayTracksByAlbumFragment} to the current activity.
@@ -32,6 +39,23 @@ public class DisplayTracksByAlbumActivity extends AppCompatActivity {
                 .disallowAddToBackStack()
                 .commit();
 
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        // Specify that tabs should be displayed in the action bar.
+      //  actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        //Make the Title of actionbar centered
+        textview = new TextView(getApplicationContext());
+        layoutparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        textview.setLayoutParams(layoutparams);
+        textview.setText(R.string.app_name);
+        textview.setTextColor(Color.WHITE);
+        textview.setGravity(Gravity.CENTER);
+        textview.setTextSize(20);
+
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(textview);
     }
 
 

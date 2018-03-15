@@ -2,15 +2,25 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+<!--    <color name="colorAccent">#FF4081</color>-->
 
-    <color name="actionbar_main_background">#800080</color>
-   <!-- <color name="actionbar_main_background">#662a48</color>-->
+ <!--   <color name="colorAccent">#FF4081</color>-->
+    <color name="colorAccent">#ADC095</color>
+<!--    <color name="actionbar_main_background">#800080</color>
+   &lt;!&ndash; <color name="actionbar_main_background">#662a48</color>&ndash;&gt;
     <color name="actionbar_main_TitleTextColor">#ffffff</color>
 
     <color name="actionbar_tab_background">@color/colorAccent</color>
+    <color name="actionbar_tab_TitleTextColor">#ffffff</color>-->
+
+    <color name="actionbar_main_background">#2F4F4F</color>
+    <!-- <color name="actionbar_main_background">#662a48</color>-->
+    <color name="actionbar_main_TitleTextColor">#ffffff</color>
+
+    <color name="actionbar_tab_background">	#708090</color>
     <color name="actionbar_tab_TitleTextColor">#ffffff</color>
 
+    <color name="RecyclerView_border_color">#ffffff</color>
 
 
 </resources>

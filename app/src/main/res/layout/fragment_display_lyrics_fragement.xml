@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-<android.support.v7.widget.CardView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,7 +16,9 @@
             android:layout_height="match_parent"
             tools:context="com.codepath.musichunter.displaylyricsbyartistandtitle.DisplayLyricsFragement">
 
-
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -44,10 +44,10 @@
 
 
             </RelativeLayout>
-
+            </android.support.v7.widget.CardView>
 
         </FrameLayout>
 
     </ScrollView>
-</android.support.v7.widget.CardView>
+
 </android.support.v4.widget.SwipeRefreshLayout>
